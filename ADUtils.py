@@ -1,4 +1,6 @@
 import re
+from string import digits
+
 # CONTROL FUNCTION
 SUFFIXES = {
     'mesh' : 'geo',
@@ -186,6 +188,10 @@ def addAttrConfShp(obj, attrName, at, k=False, e=False, cb=False, **kwargs):
     else:
         return
 
+def connectAttrTransRot(objBase, objTgt):
+    connectAttrTrans(objBase, objTgt)
+    connectAttrRot(objBase, objTgt)
+
 def lockHideAttr(lockChnl, ctrl):
     attrLockList = []
     for lockChannel in lockChnl:
@@ -220,3 +226,85 @@ def connection (connect, ctrl, obj):
         else:
            return mc.error("Your %s key name is wrong. Please check on the key list connection!" % con)
     return rs
+
+def duplicateAndRename(objDuplicate='', valuePrefix='', keyPrefix='',
+                       suffix='', selection=False, **kwargs):
+    listRename=[]
+    listRenameOri =[]
+    if selection:
+        selectObj = mc.ls(sl=1)
+        duplicate = mc.duplicate(selectObj, rc=True)
+        for i in duplicate:
+            renameOri = mc.rename(i, '%s%s_%s' % (prefixName(i), keyPrefix, suffix))
+            rename = mc.rename(renameOri, '%s%s_%s' % (prefixName(i), valuePrefix, suffix))
+            listRename.append(rename)
+            listRenameOri.append(renameOri)
+    else:
+        duplicate = mc.duplicate(objDuplicate, rc=True)
+        for i in duplicate:
+            replaceTmp = i.replace('Tmp', keyPrefix)
+            renameOri = mc.rename(i, '%s_%s' % (prefixName(replaceTmp), suffix))
+
+            replaceKeyPrefix = renameOri.replace(keyPrefix, valuePrefix)
+            rename = mc.rename(renameOri, replaceKeyPrefix)
+
+            listRename.append(rename)
+            listRenameOri.append(renameOri)
+
+    return listRenameOri, listRename
+
+def listSkeletonDic(objDuplicate='', valuePrefix='', keyPrefix='',  suffix='', selection=False, **kwargs):
+    dic = {}
+    listName = duplicateAndRename(objDuplicate=objDuplicate, valuePrefix=valuePrefix, keyPrefix=keyPrefix,
+                                    suffix=suffix, selection=selection, kwargs=kwargs)
+    listKeys = listName[0]
+    listValue = listName[1]
+
+    appendList = []
+    for listKeys, listValue in zip(listKeys, listValue):
+        allList = [listKeys, listValue]
+        appendList.append(allList)
+
+    for i in appendList:
+        listKeys  = i[0]
+        listValue = i[1]
+        dic[listKeys] = listValue
+
+    return dic
+
+
+
+def createParentTransform(listparent, object, matchPos, prefix, suffix, side=''):
+    lR = mc.listRelatives(object, ap=1)
+    try:
+        patterns = [r'\d+']
+        prefixNumber = prefixName(prefix)
+        for p in patterns:
+            prefixNumber = re.findall(p, prefixNumber)[0]
+    except:
+        prefixNumber = ''
+    # get the prefix without number
+    prefixNoNumber = str(prefix).translate(None, digits)
+
+    if side in prefixNoNumber:
+        prefixNewName = prefixNoNumber.replace(side, '')
+    else:
+        prefixNewName = prefixNoNumber
+
+    cGrp = groupParent(groups=listparent, prefix= prefixName(prefixNewName), number=prefixNumber,
+                          suffix=suffixName(suffix).title(),
+                              side=side)
+
+    if matchPos:
+        matchPosition(matchPos, cGrp[0])
+        matchScale(matchPos, cGrp[0])
+
+    if lR == None:
+        parentObj(cGrp[-1], object)
+    else:
+        # parent group offset to list relatives
+        parentObj(lR, cGrp[0])
+        # parent obj to grp offset
+        parentObj(cGrp[-1], object)
+
+    return cGrp

@@ -5,7 +5,7 @@ import maya.cmds as mc
 from string import digits
 import re
 
-import adUtils as ut
+import ADUtils as ut
 
 reload (ut)
 
@@ -91,7 +91,7 @@ class Control():
             prefixNumber=''
 
         # get the prefix without number
-        prefixNoNumber = str(prefix).translate(None, digits)
+        prefixNoNumber = str(ut.prefixName(prefix)).translate(None, digits)
 
         grpPrnt = ut.groupParent(groups=groupsCtrl, prefix=prefixNoNumber, number=prefixNumber, suffix=suffix.title(),
                                  side=side)
