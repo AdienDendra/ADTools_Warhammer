@@ -13,7 +13,11 @@ class Build:
                  noseJnt,
                  noseTipJnt,
                  chinJnt,
-                 scale
+                 scale,
+                 eyeballJntLFT,
+                 eyeballJntRGT,
+                 prefixEyeballAim,
+                 positionEyeAimCtrl,
                  ):
 
 
@@ -99,6 +103,23 @@ class Build:
 
         self.chinCtrl = chinCtrl.control
         self.chinCtrlGrp = chinCtrl.parentControl[0]
+
+        # ==============================================================================================================
+        #                                       CREATE AIM FOR EYEBALL
+        # ==============================================================================================================
+
+        eyeballAimMainCtrl = ac.Control(matchPos=eyeballJntLFT,
+                                        matchPosTwo=eyeballJntRGT,
+                                             prefix=prefixEyeballAim,
+                                             shape=ac.LOCATOR, groupsCtrl=['Zro', 'Offset'],
+                                             ctrlSize=scale * 0.4,
+                                             ctrlColor='blue', lockChannels=['v', 'r', 's'])
+
+        self.eyeballAimMainCtrl = eyeballAimMainCtrl.control
+
+        getAttribute = mc.getAttr(eyeballAimMainCtrl.parentControl[0]+'.translateZ')
+        mc.setAttr(eyeballAimMainCtrl.parentControl[0]+'.translateZ', getAttribute+(positionEyeAimCtrl*scale))
+
 
         # PARENTING GRP
         mc.parent(self.noseTipCtrlGrp, self.noseCtrl)

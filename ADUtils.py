@@ -187,6 +187,21 @@ def addAttrConfShp(obj, attrName, at, k=False, e=False, cb=False, **kwargs):
             return mc.warning("Could not find shape in %s" % obj)
     else:
         return
+# GENERAL FUNCTION: ADD ATTRIBUTE(S) ON MULTIPLE OBJECTS
+def addAttribute(objects=[], longName='', niceName='', separator=False, k=False, cb=False, **kwargs):
+    # For each object
+    for obj in objects:
+        # For each attribute
+        for x in range(0, len(longName)):
+            # See if a niceName was defined
+            attrNice = '' if not niceName else niceName[x]
+            # If the attribute does not exists
+            if not mc.attributeQuery(longName[x], node=obj, exists=True):
+                # Add the attribute
+                mc.addAttr(obj, longName=longName[x], niceName=attrNice, **kwargs)
+                # If lock was set to True
+                mc.setAttr((obj + '.' + longName[x]), k=k, e=1, cb=cb) if separator else mc.setAttr((obj + '.' + longName[x]), k=k, e=1, cb=cb)
+    return longName[0]
 
 def connectAttrTransRot(objBase, objTgt):
     connectAttrTrans(objBase, objTgt)
@@ -208,6 +223,29 @@ def lockHideAttr(lockChnl, ctrl):
 def lockHideAttrObj(obj, attrName):
     mc.setAttr('%s.%s' % (obj, attrName), l=True, k=False )
 
+def connectMatrixAll(objBase, objTgt):
+    dMtx = connectMatrix(objBase, objTgt)
+    mc.connectAttr(dMtx + '.outputTranslate', objTgt+'.translate')
+    mc.connectAttr(dMtx + '.outputRotate', objTgt + '.rotate')
+    mc.connectAttr(dMtx + '.outputScale', objTgt + '.scale')
+
+def connectMatrix(objBase, objTgt):
+    listR = mc.listRelatives(objBase, f=1, ap=1)[0]
+    split = listR.split('|')
+    firstParent = filter(None, split)[0]
+
+    pref = prefixName(objTgt)
+    multMtx = mc.createNode('multMatrix', n=pref + '_mmtx')
+
+    dMtx = mc.createNode('decomposeMatrix', n=pref + '_dmtx')
+
+    mc.connectAttr(objBase + '.worldMatrix[0]', multMtx + '.matrixIn[0]')
+    mc.connectAttr(firstParent + '.worldInverseMatrix[0]', multMtx + '.matrixIn[1]')
+
+    mc.connectAttr(multMtx + '.matrixSum', dMtx + '.inputMatrix')
+
+    return dMtx
+
 def connection (connect, ctrl, obj):
     dic = {'parentCons': parentCons,
            'pointCons': pointCons,
@@ -218,6 +256,7 @@ def connection (connect, ctrl, obj):
            'connectTrans' : connectAttrTrans,
            'connectOrient' : connectAttrRot,
            'connectScale' : connectAttrScale,
+           'connectMatrixAll': connectMatrixAll,
            }
     rs={}
     for con in connect:

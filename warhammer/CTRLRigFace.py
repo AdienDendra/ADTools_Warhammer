@@ -7,7 +7,8 @@ reload(em)
 
 
 
-def buildRig(scale=1.0):
+def buildRig(scale=1.0,
+             positionEyeAimCtrl=15):
 # ======================================================================================================================
 #                                              DUPLICATE JOINTS AS DRIVER
 # ======================================================================================================================
@@ -53,13 +54,38 @@ def buildRig(scale=1.0):
                  browOutRGTJnt=sj.browOutRGT,
                  eyelidPinchRGTJnt=sj.eyelidPinchRGT,
                  sideLFT='LFT',
-                 sideRGT='RGT')
+                 sideRGT='RGT',
+                 eyeballJntLFT=sj.eyeballLFT,
+                 eyeballJntRGT=sj.eyeballRGT,
+                 prefixEyeballAim='eyeballAim',
+                 positionEyeAimCtrl=positionEyeAimCtrl,
+               )
 
-    eyelidLFT = em.Eyelids(crv,
-                 scale,
-                 sideLFT,
-                 sideRGT,
-                 offsetJnt02BindPos,
-                 directionCtrl01,
-                 directionCtrl02,
-                 ctrlColor, shape)
+    eyelidLFT = em.Eyelid(crvUp='eyelidUpLFT_crv',
+                 crvDown='eyelidDownLFT_crv',
+                 headUpJoint=sj.headUp01,
+                 eyeballJnt=sj.eyeballLFT,
+                 prefixEyeball='eyeball',
+                 prefixEyeballAim='eyeballAim',
+                 scale=scale,
+                 side='LFT',
+                 directionLip01=15,
+                 directionLip02=10,
+                 positionEyeAimCtrl=positionEyeAimCtrl,
+                 eyeballAimMainCtrl=mainFace.eyeballAimMainCtrl
+                 )
+
+
+    eyelidRGT = em.Eyelid(crvUp='eyelidUpRGT_crv',
+                          crvDown='eyelidDownRGT_crv',
+                          headUpJoint=sj.headUp01,
+                          eyeballJnt=sj.eyeballRGT,
+                          prefixEyeball='eyeball',
+                          prefixEyeballAim='eyeballAim',
+                          scale=scale,
+                          side='RGT',
+                          directionLip01=15,
+                          directionLip02=10,
+                          positionEyeAimCtrl=positionEyeAimCtrl,
+                          eyeballAimMainCtrl=mainFace.eyeballAimMainCtrl
+                          )

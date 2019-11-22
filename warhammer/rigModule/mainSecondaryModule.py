@@ -38,6 +38,10 @@ class MainFace:
                  eyelidPinchRGTJnt,
                  sideLFT,
                  sideRGT,
+                 eyeballJntLFT,
+                 eyeballJntRGT,
+                 prefixEyeballAim,
+                 positionEyeAimCtrl,
                  ):
 
         # BUILD CONTROLLER
@@ -50,7 +54,14 @@ class MainFace:
                  noseJnt=noseJnt,
                  noseTipJnt=noseTipJnt,
                  chinJnt=chinJnt,
-                 scale=scale)
+                 scale=scale,
+                 eyeballJntLFT=eyeballJntLFT,
+                 eyeballJntRGT=eyeballJntRGT,
+                 prefixEyeballAim=prefixEyeballAim,
+                 positionEyeAimCtrl=positionEyeAimCtrl,
+                        )
+
+        self.eyeballAimMainCtrl = main.eyeballAimMainCtrl
 
         secLFT = sc.Build(nostrilJnt=nostrilLFTJnt,
                                 cheekUpJnt=cheekUpLFTJnt,

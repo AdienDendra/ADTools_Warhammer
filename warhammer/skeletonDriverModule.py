@@ -33,8 +33,6 @@ class listFaceSkeletonDuplicate:
         self.jaw01     = sj['%s%s%s_%s' % ('jaw01', oriPrefix, keyPrefix, suffix)]
         self.chin     = sj['%s%s%s_%s' % ('chin', oriPrefix, keyPrefix, suffix)]
 
-        # EYEBALL LFT
-        self.eyeLFT    = sj['%s%s%s%s_%s' % ('eye', oriPrefix, keyPrefix, 'LFT', suffix)]
 
         # EYELIDS LFT
         self.eyebrowInLFT    = sj['%s%s%s%s_%s' % ('eyebrowIn', oriPrefix, keyPrefix, 'LFT', suffix)]
@@ -68,10 +66,6 @@ class listFaceSkeletonDuplicate:
 
         self.lipCornerLFT    = sj['%s%s%s%s_%s' % ('lipCorner', oriPrefix, keyPrefix, 'LFT', suffix)]
 
-
-        # EYEBALL RGT
-        self.eyeRGT    = sj['%s%s%s%s_%s' % ('eye', oriPrefix, keyPrefix, 'RGT', suffix)]
-
         # EYELIDS RGT
         self.eyebrowInRGT    = sj['%s%s%s%s_%s' % ('eyebrowIn', oriPrefix, keyPrefix, 'RGT', suffix)]
         self.eyebrowMidRGT    = sj['%s%s%s%s_%s' % ('eyebrowMid', oriPrefix, keyPrefix, 'RGT', suffix)]
@@ -97,6 +91,10 @@ class listFaceSkeletonDuplicate:
         self.lipDown02RGT  = sj['%s%s%s%s_%s' % ('lipDown02', oriPrefix, keyPrefix, 'RGT', suffix)]
 
         self.lipCornerRGT    = sj['%s%s%s%s_%s' % ('lipCorner', oriPrefix, keyPrefix, 'RGT', suffix)]
+
+        # EYEBALL
+        self.eyeballLFT = sj['%s%s%s%s_%s' % ('eyeball', oriPrefix, keyPrefix, 'LFT', suffix)]
+        self.eyeballRGT = sj['%s%s%s%s_%s' % ('eyeball', oriPrefix, keyPrefix, 'RGT', suffix)]
 
 
         # mc.parent(self.neck, 'tmpJnt_grp')
