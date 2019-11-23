@@ -148,7 +148,6 @@ class Build:
 
             mc.setAttr(self.controllerBind03.parentControl[0] + '.scaleY', -1)
 
-
             au.connectAttrRot(self.controllerBind01.control, self.jnt01)
 
             au.connectAttrRot(self.controllerBind02.control, self.jnt02)
@@ -245,8 +244,6 @@ class Build:
 
         jointPosBind = len(self.allJoint)
 
-
-
         # query position of bind joint
         joint01 =  self.allJoint[(jointPosBind * 0)]
 
@@ -288,9 +285,10 @@ class Build:
 
 
         # create bind curve
-        deformCrv = mc.curve(ep=[(self.xformJnt01), (self.xformJnt02), (self.xformJnt03),
-                                 (self.xformJnt04), (self.xformJnt05)],
-                             degree=3)
+        deformCrv = mc.duplicate(crv)[0]
+            # mc.curve(ep=[(self.xformJnt01), (self.xformJnt02), (self.xformJnt03),
+            #                      (self.xformJnt04), (self.xformJnt05)], degree=3)
+
         deformCrv = mc.rename(deformCrv, (self.prefixNameCrv + 'Bind' + '_crv'))
 
         # parent the bind joint
@@ -332,7 +330,7 @@ class Build:
 
         # rebuild the curve
         mc.rebuildCurve(deformCrv, ch=0, rpo=1, rt=0, end=1, kr=0, kcp=0,
-                        kep=1, kt=0, s=4, d=3, tol=0.01)
+                        kep=1, kt=0, s=8, d=3, tol=0.01)
 
         # skinning the joint to the bind curve
         skinCls = mc.skinCluster([jnt05, jnt04, jnt01, jnt02, jnt03], deformCrv,
@@ -346,14 +344,22 @@ class Build:
         skinPercent4 = '%s.cv[4]' % deformCrv
         skinPercent5 = '%s.cv[5]' % deformCrv
         skinPercent6 = '%s.cv[6]' % deformCrv
+        skinPercent7 = '%s.cv[7]' % deformCrv
+        skinPercent8 = '%s.cv[8]' % deformCrv
+        skinPercent9 = '%s.cv[9]' % deformCrv
+        skinPercent10 = '%s.cv[10]' % deformCrv
 
         mc.skinPercent(skinCls[0], skinPercent0, tv=[(jnt01, 1.0)])
-        mc.skinPercent(skinCls[0], skinPercent1, tv=[(jnt01, 0.6), (jnt02, 0.4)])
-        mc.skinPercent(skinCls[0], skinPercent2, tv=[(jnt02, 0.7), (jnt03, 0.3)])
-        mc.skinPercent(skinCls[0], skinPercent3, tv=[(jnt03, 1)])
-        mc.skinPercent(skinCls[0], skinPercent4, tv=[(jnt04, 0.7), (jnt03, 0.3)])
-        mc.skinPercent(skinCls[0], skinPercent5, tv=[(jnt05, 0.6), (jnt04, 0.4)])
-        mc.skinPercent(skinCls[0], skinPercent6, tv=[(jnt05, 1.0)])
+        mc.skinPercent(skinCls[0], skinPercent1, tv=[(jnt01, 0.9), (jnt02, 0.1)])
+        mc.skinPercent(skinCls[0], skinPercent2, tv=[(jnt01, 0.7), (jnt02, 0.3)])
+        mc.skinPercent(skinCls[0], skinPercent3, tv=[(jnt02, 0.5), (jnt01, 0.25), (jnt03, 0.25)])
+        mc.skinPercent(skinCls[0], skinPercent4, tv=[(jnt02, 0.3), (jnt03, 0.7)])
+        mc.skinPercent(skinCls[0], skinPercent5, tv=[(jnt03, 1.0)])
+        mc.skinPercent(skinCls[0], skinPercent6, tv=[(jnt04, 0.3), (jnt03, 0.7)])
+        mc.skinPercent(skinCls[0], skinPercent7, tv=[(jnt04, 0.5), (jnt05, 0.25), (jnt03, 0.25)])
+        mc.skinPercent(skinCls[0], skinPercent8, tv=[(jnt05, 0.7), (jnt04, 0.3)])
+        mc.skinPercent(skinCls[0], skinPercent9, tv=[(jnt05, 0.9), (jnt04, 0.1)])
+        mc.skinPercent(skinCls[0], skinPercent10, tv=[(jnt05, 1.0)])
 
         # wire the curve
         wireDef = mc.wire(crv, dds=(0, 100 * scale), wire=deformCrv)

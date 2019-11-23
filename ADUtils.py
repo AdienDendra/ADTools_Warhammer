@@ -1,4 +1,7 @@
 import re
+import maya.cmds as mc
+import pymel.core as pm
+
 from string import digits
 
 # CONTROL FUNCTION
@@ -13,9 +16,100 @@ SUFFIXES = {
 GROUP = 'grp'
 GIMBAL = 'Gmbl'
 
-import maya.cmds as mc
-import pymel.core as pm
+# CONNECTING THE FOLLICLE
+def connectFollicleRot(follicleNode, follicleTransf):
+    conn = mc.connectAttr(follicleNode + '.outRotate', follicleTransf + '.rotate')
+    return conn
 
+def connectFollicleTrans(follicleNode, follicleTransf):
+    conn = mc.connectAttr(follicleNode + '.outTranslate', follicleTransf + '.translate')
+    return conn
+
+def dicConnectFol(connect,follicleNode, follicleTransf):
+        dic = {'rotateConn': connectFollicleRot,
+               'transConn': connectFollicleTrans,
+               }
+        for con in connect:
+            if con in dic.keys():
+                dic[con](follicleNode, follicleTransf)
+            else:
+                return mc.warning("Your %s key name is wrong. Please check on the key list connection!" % con)
+        return dic
+
+def createFollicleSel(objSel, objMesh, connect = None, prefix=None, suffix=None, connectFol=['']):
+
+    objMesh = mc.listRelatives(objMesh, s=1)[0]
+
+    closestNode =None
+    # If the inputSurface is of type 'nurbsSurface', connect the surface to the closest node
+    if mc.objectType(objMesh) == 'nurbsSurface':
+        closestNode = mc.createNode('closestPointOnSurface')
+        mc.connectAttr((objMesh + '.local'), (closestNode + '.inputSurface'))
+
+    # If the inputSurface is of type 'mesh', connect the surface to the closest node
+    elif mc.objectType(objMesh) == 'mesh':
+        closestNode = mc.createNode('closestPointOnMesh')
+        mc.connectAttr((objMesh + '.outMesh'), (closestNode + '.inMesh'))
+    else:
+        mc.error('please check your type object. Object must be either nurbs or mesh')
+
+    # query object selection
+    xform = mc.xform(objSel, ws=True, t=True, q=True)
+
+    # set the position of node according to the loc
+    mc.setAttr(closestNode + '.inPositionX', xform[0])
+    mc.setAttr(closestNode + '.inPositionY', xform[1])
+    mc.setAttr(closestNode + '.inPositionZ', xform[2])
+
+    # create follicle
+    follicleNode = mc.createNode('follicle')
+
+    # query the transform follicle
+    follicleTransform = mc.listRelatives(follicleNode, type='transform', p=True)
+
+    # connecting the shape follicle to transform follicle
+    dicConnectFol(connectFol, follicleNode, follicleTransform[0])
+
+    # connect the world matrix mesh to the follicle shape
+    mc.connectAttr(objMesh+ '.worldMatrix[0]', follicleNode + '.inputWorldMatrix')
+
+    # connect the output mesh of mesh to input mesh follicle
+    if mc.objectType(objMesh) == 'nurbsSurface':
+        mc.connectAttr((objMesh + '.local'), (follicleNode + '.inputSurface'))
+
+    # If the inputSurface is of type 'mesh', connect the surface to the follicle
+    if mc.objectType(objMesh) == 'mesh':
+        mc.connectAttr(objMesh + '.outMesh', follicleNode + '.inputMesh')
+
+    # turn off the simulation follicle
+    mc.setAttr(follicleNode + '.simulationMethod', 0)
+
+    # get u and v output closest point on mesh node
+    parU = mc.getAttr(closestNode + '.result.parameterU')
+    parV = mc.getAttr(closestNode + '.result.parameterV')
+
+    # connect output closest point on mesh node to follicle
+    mc.setAttr(follicleNode + '.parameterU', parU)
+    mc.setAttr(follicleNode + '.parameterV', parV)
+
+    # deleting node
+    mc.delete(closestNode)
+
+    #rename follicle
+    if prefix or suffix:
+        follicleTransform = mc.rename(follicleTransform, '%s_%s' % (prefixName(prefix) , suffix))
+    else:
+        follicleTransform = mc.rename(follicleTransform, '%s_%s' % (prefixName(objSel), 'fol'))
+
+    # listing the shape of follicle
+    follicleShape = mc.listRelatives(follicleTransform, s=1)[0]
+
+    if connect:
+        connection(connect, follicleTransform, objSel)
+    else:
+        return follicleTransform, follicleShape
+
+    return follicleTransform, follicleShape
 
 def scaleCrv(sizeObj, shape):
     scaleShp = [[sizeObj * i for i in j] for j in shape]

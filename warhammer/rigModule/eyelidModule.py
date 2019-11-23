@@ -16,8 +16,8 @@ class Eyelid:
                  prefixEyeballAim,
                  scale,
                  side,
-                 directionLip01,
-                 directionLip02,
+                 directionLid01,
+                 directionLid02,
                  positionEyeAimCtrl,
                  eyeballAimMainCtrl
                  ):
@@ -34,8 +34,8 @@ class Eyelid:
                                  worldUpObject=worldUpObject,
                                  eyeballJnt=eyeballJnt,
                                  scale=1,
-                                 directionLip01=directionLip01,
-                                 directionLip02=directionLip02,
+                                 directionLip01=directionLid01,
+                                 directionLip02=directionLid02,
                                  side=side,
                                  ctrlColor='yellow',
                                  controllerLidDown=False)
@@ -44,8 +44,8 @@ class Eyelid:
                                    worldUpObject=worldUpObject,
                                    eyeballJnt=eyeballJnt,
                                    scale=1,
-                                   directionLip01=directionLip01,
-                                   directionLip02=directionLip02,
+                                   directionLip01=directionLid01,
+                                   directionLip02=directionLid02,
                                    side=side,
                                    ctrlColor='yellow',
                                    controllerLidDown=True)
@@ -88,16 +88,53 @@ class Eyelid:
                                            scale=scale,
                                            side=side)
 
-        # parent constraint corner grp bind jnt
-        mc.parentConstraint(lidCornerCtrlIn, self.eyelidUp.jointBind01Grp[1], mo=1)
-        mc.parentConstraint(lidCornerCtrlIn, self.eyelidDown.jointBind01Grp[1], mo=1)
+        pos = mc.xform(lidCornerCtrlOut, ws=1, q=1, t=1)[0]
+        if pos > 0:
+            # parent constraint corner grp bind jnt
+            au.connectAttrTransRot(lidCornerCtrlIn, self.eyelidUp.jointBind01Grp[1])
+            au.connectAttrTransRot(lidCornerCtrlIn, self.eyelidDown.jointBind01Grp[1])
+            au.connectAttrTransRot(lidCornerCtrlOut, self.eyelidUp.jointBind05Grp[1])
+            au.connectAttrTransRot(lidCornerCtrlOut, self.eyelidDown.jointBind05Grp[1])
+        else:
+            self.cornerReverseNode(lidCornerCtrl=lidCornerCtrlOut, side=side, lidCornerName='lidCornerOut',
+                                   targetUp=self.eyelidUp.jointBind05Grp[1], targetDown=self.eyelidDown.jointBind05Grp[1])
+
+            self.cornerReverseNode(lidCornerCtrl=lidCornerCtrlIn, side=side, lidCornerName='lidCornerIn',
+                                   targetUp=self.eyelidUp.jointBind01Grp[1], targetDown=self.eyelidDown.jointBind01Grp[1])
+
+            # transRev = mc.createNode('multiplyDivide', n='lidCornerOutTrans'+side+'_mdn')
+            # rotRev = mc.createNode('multiplyDivide', n='lidCornerOutRot'+side+'_mdn')
+            # mc.connectAttr(lidCornerCtrlOut+'.translate',transRev+'.input1')
+            # mc.setAttr(transRev+'.input2X', -1)
+            #
+            # mc.connectAttr(lidCornerCtrlOut+'.rotate',rotRev+'.input1')
+            # mc.setAttr(rotRev+'.input2Y', -1)
+            # mc.setAttr(rotRev+'.input2Z', -1)
+            #
+            # mc.connectAttr(transRev+'.output', self.eyelidUp.jointBind05Grp[1]+'.translate')
+            # mc.connectAttr(rotRev+'.output', self.eyelidUp.jointBind05Grp[1]+'.rotate')
+            # mc.connectAttr(transRev+'.output', self.eyelidDown.jointBind05Grp[1]+'.translate')
+            # mc.connectAttr(rotRev+'.output', self.eyelidDown.jointBind05Grp[1]+'.rotate')
+
         mc.parent(self.eyelidUp.controllerBindGrpZro01, lidCornerCtrlIn)
         mc.parent(self.eyelidDown.controllerBindGrpZro01, lidCornerCtrlIn)
-
-        mc.parentConstraint(lidCornerCtrlOut, self.eyelidUp.jointBind05Grp[1], mo=1)
-        mc.parentConstraint(lidCornerCtrlOut, self.eyelidDown.jointBind05Grp[1], mo=1)
         mc.parent(self.eyelidUp.controllerBindGrpZro05, lidCornerCtrlOut)
         mc.parent(self.eyelidDown.controllerBindGrpZro05, lidCornerCtrlOut)
+
+    def cornerReverseNode(self, lidCornerCtrl, side, lidCornerName='', targetUp='', targetDown=''):
+        transRev = mc.createNode('multiplyDivide', n=lidCornerName + 'Trans' + side + '_mdn')
+        rotRev = mc.createNode('multiplyDivide', n=lidCornerName+ 'Rot' + side + '_mdn')
+        mc.connectAttr(lidCornerCtrl + '.translate', transRev + '.input1')
+        mc.setAttr(transRev + '.input2X', -1)
+
+        mc.connectAttr(lidCornerCtrl + '.rotate', rotRev + '.input1')
+        mc.setAttr(rotRev + '.input2Y', -1)
+        mc.setAttr(rotRev + '.input2Z', -1)
+
+        mc.connectAttr(transRev + '.output', targetUp + '.translate')
+        mc.connectAttr(rotRev + '.output', targetUp + '.rotate')
+        mc.connectAttr(transRev + '.output', targetDown + '.translate')
+        mc.connectAttr(rotRev + '.output', targetDown + '.rotate')
 
     def cornerCtrl(self, matchPosOne, matchPosTwo, prefix, scale, side):
         cornerCtrl = ct.Control(matchPos=matchPosOne, matchPosTwo=matchPosTwo,
@@ -242,10 +279,11 @@ class Eyelid:
         #                                                   BLINK
         # ==============================================================================================================
         # CREATE CURVE MID BLINK
-        curveBlinkBindMid = mc.curve(d=3, ep=[(self.eyelidUp.xformJnt01), (self.eyelidUp.xformJnt05)])
-        curveBlinkBindMid = mc.rebuildCurve(mc.rebuildCurve(curveBlinkBindMid, ch=0, rpo=1, rt=0, end=1, kr=0, kcp=0,
-                                                            kep=1, kt=0, s=4, d=3, tol=0.01))
-        curveBlinkBindMid = mc.rename(curveBlinkBindMid, ('eyelidBlink' + side + '_crv'))
+        curveBlinkBindMidOld = mc.curve(d=3, ep=[(self.eyelidUp.xformJnt01), (self.eyelidUp.xformJnt05)])
+        curveBlinkBindMidReb = mc.rebuildCurve(curveBlinkBindMidOld, ch=0, rpo=1, rt=0, end=1, kr=0, kcp=0,
+                                                               kep=1, kt=0, s=8, d=3, tol=0.01)
+
+        curveBlinkBindMid = mc.rename(curveBlinkBindMidReb, ('eyelidBlink' + side + '_crv'))
 
         curveBlinkUp = mc.duplicate(crvUp, n='eyelidBlinkUp'+side+'_crv')[0]
         curveBlinkDown = mc.duplicate(crvDown, n='eyelidBlinkDown'+side+'_crv')[0]

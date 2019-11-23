@@ -1,14 +1,23 @@
-from rigModule import mainSecondaryModule as ms, eyelidModule as em
+from rigModule import mainSecondaryModule as ms, eyelidModule as em, lipModule as lm
 import skeletonDriverModule as sd
 
 reload(ms)
 reload(sd)
 reload(em)
+reload(lm)
 
 
 
 def buildRig(scale=1.0,
-             positionEyeAimCtrl=15):
+             positionEyeAimCtrl=15,
+             directionLipCorner=40,
+             directionLip01=35,
+             directionLip02=25,
+             directionLid01=15,
+             directionLid02=10,
+             sideLFT='LFT',
+             sideRGT='RGT'
+             ):
 # ======================================================================================================================
 #                                              DUPLICATE JOINTS AS DRIVER
 # ======================================================================================================================
@@ -53,8 +62,8 @@ def buildRig(scale=1.0,
                  browMidRGTJnt=sj.browMidRGT,
                  browOutRGTJnt=sj.browOutRGT,
                  eyelidPinchRGTJnt=sj.eyelidPinchRGT,
-                 sideLFT='LFT',
-                 sideRGT='RGT',
+                 sideLFT=sideLFT,
+                 sideRGT=sideRGT,
                  eyeballJntLFT=sj.eyeballLFT,
                  eyeballJntRGT=sj.eyeballRGT,
                  prefixEyeballAim='eyeballAim',
@@ -62,18 +71,18 @@ def buildRig(scale=1.0,
                )
 
     eyelidLFT = em.Eyelid(crvUp='eyelidUpLFT_crv',
-                 crvDown='eyelidDownLFT_crv',
-                 headUpJoint=sj.headUp01,
-                 eyeballJnt=sj.eyeballLFT,
-                 prefixEyeball='eyeball',
-                 prefixEyeballAim='eyeballAim',
-                 scale=scale,
-                 side='LFT',
-                 directionLip01=15,
-                 directionLip02=10,
-                 positionEyeAimCtrl=positionEyeAimCtrl,
-                 eyeballAimMainCtrl=mainFace.eyeballAimMainCtrl
-                 )
+                          crvDown='eyelidDownLFT_crv',
+                          headUpJoint=sj.headUp01,
+                          eyeballJnt=sj.eyeballLFT,
+                          prefixEyeball='eyeball',
+                          prefixEyeballAim='eyeballAim',
+                          scale=scale,
+                          side=sideLFT,
+                          directionLid01=directionLid01,
+                          directionLid02=directionLid02,
+                          positionEyeAimCtrl=positionEyeAimCtrl,
+                          eyeballAimMainCtrl=mainFace.eyeballAimMainCtrl
+                          )
 
 
     eyelidRGT = em.Eyelid(crvUp='eyelidUpRGT_crv',
@@ -83,9 +92,29 @@ def buildRig(scale=1.0,
                           prefixEyeball='eyeball',
                           prefixEyeballAim='eyeballAim',
                           scale=scale,
-                          side='RGT',
-                          directionLip01=15,
-                          directionLip02=10,
+                          side=sideRGT,
+                          directionLid01=directionLid01,
+                          directionLid02=directionLid02,
                           positionEyeAimCtrl=positionEyeAimCtrl,
                           eyeballAimMainCtrl=mainFace.eyeballAimMainCtrl
                           )
+
+    lip = lm.Lip(objectFolMesh='captainLipFol_ply',
+                 lipMidUpJnt=sj.lipMidUp,
+                 lipUpLFTJnt01=sj.lipUp01LFT,
+                 lipMidDownJnt=sj.lipMidDown,
+                 lipDownLFTJnt02=sj.lipDown02LFT,
+                 lipDownLFTJnt01=sj.lipDown01LFT,
+                 lipUpLFTJnt02=sj.lipUp02LFT,
+                 lipCornerLFTJnt=sj.lipCornerLFT,
+                 lipUpRGTJnt01=sj.lipUp01RGT,
+                 lipUpRGTJnt02=sj.lipUp02RGT,
+                 lipDownRGTJnt01=sj.lipDown01RGT,
+                 lipDownRGTJnt02=sj.lipDown02RGT,
+                 lipCornerRGTJnt=sj.lipCornerRGT,
+                 scale=scale,
+                 directionLipCorner=directionLipCorner,
+                 directionLip01=directionLip01,
+                 directionLip02=directionLip02,
+                 sideLFT=sideLFT,
+                 sideRGT=sideRGT)
