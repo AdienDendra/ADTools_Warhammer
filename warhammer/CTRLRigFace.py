@@ -16,7 +16,8 @@ def buildRig(scale=1.0,
              directionLid01=15,
              directionLid02=10,
              sideLFT='LFT',
-             sideRGT='RGT'
+             sideRGT='RGT',
+             objectFolMesh='captainFol_ply'
              ):
 # ======================================================================================================================
 #                                              DUPLICATE JOINTS AS DRIVER
@@ -68,6 +69,7 @@ def buildRig(scale=1.0,
                  eyeballJntRGT=sj.eyeballRGT,
                  prefixEyeballAim='eyeballAim',
                  positionEyeAimCtrl=positionEyeAimCtrl,
+                 objectFolMesh=objectFolMesh,
                )
 
     eyelidLFT = em.Eyelid(crvUp='eyelidUpLFT_crv',
@@ -99,7 +101,7 @@ def buildRig(scale=1.0,
                           eyeballAimMainCtrl=mainFace.eyeballAimMainCtrl
                           )
 
-    lip = lm.Lip(objectFolMesh='captainLipFol_ply',
+    lip = lm.Lip(objectFolMesh=objectFolMesh,
                  lipMidUpJnt=sj.lipMidUp,
                  lipUpLFTJnt01=sj.lipUp01LFT,
                  lipMidDownJnt=sj.lipMidDown,

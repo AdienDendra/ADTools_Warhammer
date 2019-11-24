@@ -1,5 +1,5 @@
 import maya.cmds as mc
-import ADCtrl as ac
+import ADCtrl as ac, ADUtils as au
 
 reload(ac)
 
@@ -11,6 +11,7 @@ class Build:
                  headLowJnt,
                  jawJnt,
                  noseJnt,
+                 objectFolMesh,
                  noseTipJnt,
                  chinJnt,
                  scale,
@@ -65,7 +66,7 @@ class Build:
                                   prefix=jawJnt,
                                   shape=ac.SQUAREPLUS, groupsCtrl=[''],
                                   ctrlSize=scale * 10.0,
-                                  ctrlColor='yellow', lockChannels=['v'],
+                                  ctrlColor='yellow', lockChannels=['v','s'],
                                   connect=['parentCons', 'scaleCons'])
 
         self.jawCtrl = jawCtrl.control
@@ -73,26 +74,31 @@ class Build:
 
         noseTipCtrl = ac.Control(matchPos=noseTipJnt,
                                       prefix=noseTipJnt,
-                                      shape=ac.JOINT, groupsCtrl=[''],
+                                      shape=ac.JOINT, groupsCtrl=['','Offset'],
                                       ctrlSize=scale * 1.0,
-                                      ctrlColor='yellow', lockChannels=['v'],
-                                      connect=['parentCons', 'scaleCons'])
+                                      ctrlColor='yellow', lockChannels=['v'])
 
         self.noseTipCtrl = noseTipCtrl.control
         self.noseTipCtrlGrp = noseTipCtrl.parentControl[0]
+        self.noseTipCtrlOffset = noseTipCtrl.parentControl[1]
 
+        noseTipGrp = au.createParentTransform(listparent=[''], object=noseTipJnt, matchPos=noseTipJnt, prefix='noseTip', suffix='_jnt')
 
+        au.connectAttrObject(self.noseTipCtrl, noseTipJnt)
 
-        noseCtrl = ac.Control(matchPos=noseJnt,
-                                   prefix=noseJnt,
-                                   shape=ac.LOCATOR, groupsCtrl=[''],
-                                   ctrlSize=scale * 3.0,
-                                   ctrlColor='blue', lockChannels=['v'])
+        # noseCtrl = ac.Control(matchPos=noseJnt,
+        #                            prefix=noseJnt,
+        #                            shape=ac.LOCATOR, groupsCtrl=[''],
+        #                            ctrlSize=scale * 3.0,
+        #                            ctrlColor='blue', lockChannels=['v'])
+        #
+        # self.noseCtrl = noseCtrl.control
+        # self.noseCtrlGrp = noseCtrl.parentControl[0]
+        # tz = mc.getAttr(self.noseCtrlGrp+'.translateZ')
+        # mc.setAttr(self.noseCtrlGrp+'.translateZ', tz+8)
 
-        self.noseCtrl = noseCtrl.control
-        self.noseCtrlGrp = noseCtrl.parentControl[0]
-        tz = mc.getAttr(self.noseCtrlGrp+'.translateZ')
-        mc.setAttr(self.noseCtrlGrp+'.translateZ', tz+8)
+        # # connect nose ctrl to nostip grp ctrl
+        # au.connectAttrObject(self.noseCtrl, self.noseTipCtrlOffset)
 
         chinCtrl = ac.Control(matchPos=chinJnt,
                                    prefix=chinJnt,
@@ -103,6 +109,16 @@ class Build:
 
         self.chinCtrl = chinCtrl.control
         self.chinCtrlGrp = chinCtrl.parentControl[0]
+
+        # group to follicle
+        object = [self.noseTipCtrlGrp]
+
+        self.follicleTransformAll=[]
+        for i in object:
+            follicleTransform = au.createFollicleSel(objSel=i, objMesh=objectFolMesh, connectFol=['transConn', 'rotateConn'])[0]
+            mc.parent(i, follicleTransform)
+            self.follicleTransformAll.append(follicleTransform)
+
 
         # ==============================================================================================================
         #                                       CREATE AIM FOR EYEBALL
@@ -122,9 +138,8 @@ class Build:
 
 
         # PARENTING GRP
-        mc.parent(self.noseTipCtrlGrp, self.noseCtrl)
         mc.parent(self.chinCtrlGrp, self.jawCtrl)
         mc.parent(self.jawCtrlGrp, self.headLowCtrl)
 
-        mc.parent(self.headLowCtrlGrp, self.headUpCtrlGrp, self.noseCtrlGrp, self.headCtrl)
+        mc.parent(self.headLowCtrlGrp, self.headUpCtrlGrp, self.headCtrl)
         mc.parent(self.headCtrlGrp, self.neckCtrl)

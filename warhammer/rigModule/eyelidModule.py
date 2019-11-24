@@ -65,11 +65,12 @@ class Eyelid:
                                 jointBind03GrpOffsetUp=self.eyelidDown.jointBind03GrpOffset)
 
         #PARENT TO GRP
-        mc.parent(self.eyelidUp.jointGrp, self.eyelidUp.locatorGrp, self.eyelidUp.bindJntGrp,
-                  self.eyelidUp.curvesGrp, self.eyelidUp.jointGrp, self.eyelidUp.grpDrvCtrl,
-                  self.eyelidDown.jointGrp, self.eyelidDown.locatorGrp, self.eyelidDown.bindJntGrp,
-                  self.eyelidDown.curvesGrp, self.eyelidDown.jointGrp, self.eyelidDown.grpDrvCtrl, blink
+        mc.parent(self.eyelidUp.jointGrp, self.eyelidUp.locatorGrp,
+                  self.eyelidUp.curvesGrp, self.eyelidUp.jointGrp,
+                  self.eyelidDown.jointGrp, self.eyelidDown.locatorGrp,
+                  self.eyelidDown.curvesGrp, self.eyelidDown.jointGrp,  blink
                   )
+
 
     # ==================================================================================================================
     #                                                  CORNER CONTROLLER
@@ -88,38 +89,27 @@ class Eyelid:
                                            scale=scale,
                                            side=side)
 
-        pos = mc.xform(lidCornerCtrlOut, ws=1, q=1, t=1)[0]
+        pos = mc.xform(lidCornerCtrlOut[0], ws=1, q=1, t=1)[0]
         if pos > 0:
             # parent constraint corner grp bind jnt
-            au.connectAttrTransRot(lidCornerCtrlIn, self.eyelidUp.jointBind01Grp[1])
-            au.connectAttrTransRot(lidCornerCtrlIn, self.eyelidDown.jointBind01Grp[1])
-            au.connectAttrTransRot(lidCornerCtrlOut, self.eyelidUp.jointBind05Grp[1])
-            au.connectAttrTransRot(lidCornerCtrlOut, self.eyelidDown.jointBind05Grp[1])
+            au.connectAttrTransRot(lidCornerCtrlIn[0], self.eyelidUp.jointBind01Grp[1])
+            au.connectAttrTransRot(lidCornerCtrlIn[0], self.eyelidDown.jointBind01Grp[1])
+            au.connectAttrTransRot(lidCornerCtrlOut[0], self.eyelidUp.jointBind05Grp[1])
+            au.connectAttrTransRot(lidCornerCtrlOut[0], self.eyelidDown.jointBind05Grp[1])
         else:
-            self.cornerReverseNode(lidCornerCtrl=lidCornerCtrlOut, side=side, lidCornerName='lidCornerOut',
+            self.cornerReverseNode(lidCornerCtrl=lidCornerCtrlOut[0], side=side, lidCornerName='lidCornerOut',
                                    targetUp=self.eyelidUp.jointBind05Grp[1], targetDown=self.eyelidDown.jointBind05Grp[1])
 
-            self.cornerReverseNode(lidCornerCtrl=lidCornerCtrlIn, side=side, lidCornerName='lidCornerIn',
+            self.cornerReverseNode(lidCornerCtrl=lidCornerCtrlIn[0], side=side, lidCornerName='lidCornerIn',
                                    targetUp=self.eyelidUp.jointBind01Grp[1], targetDown=self.eyelidDown.jointBind01Grp[1])
 
-            # transRev = mc.createNode('multiplyDivide', n='lidCornerOutTrans'+side+'_mdn')
-            # rotRev = mc.createNode('multiplyDivide', n='lidCornerOutRot'+side+'_mdn')
-            # mc.connectAttr(lidCornerCtrlOut+'.translate',transRev+'.input1')
-            # mc.setAttr(transRev+'.input2X', -1)
-            #
-            # mc.connectAttr(lidCornerCtrlOut+'.rotate',rotRev+'.input1')
-            # mc.setAttr(rotRev+'.input2Y', -1)
-            # mc.setAttr(rotRev+'.input2Z', -1)
-            #
-            # mc.connectAttr(transRev+'.output', self.eyelidUp.jointBind05Grp[1]+'.translate')
-            # mc.connectAttr(rotRev+'.output', self.eyelidUp.jointBind05Grp[1]+'.rotate')
-            # mc.connectAttr(transRev+'.output', self.eyelidDown.jointBind05Grp[1]+'.translate')
-            # mc.connectAttr(rotRev+'.output', self.eyelidDown.jointBind05Grp[1]+'.rotate')
+        mc.parent(self.eyelidUp.controllerBindGrpZro01, lidCornerCtrlIn[0])
+        mc.parent(self.eyelidDown.controllerBindGrpZro01, lidCornerCtrlIn[0])
+        mc.parent(self.eyelidUp.controllerBindGrpZro05, lidCornerCtrlOut[0])
+        mc.parent(self.eyelidDown.controllerBindGrpZro05, lidCornerCtrlOut[0])
 
-        mc.parent(self.eyelidUp.controllerBindGrpZro01, lidCornerCtrlIn)
-        mc.parent(self.eyelidDown.controllerBindGrpZro01, lidCornerCtrlIn)
-        mc.parent(self.eyelidUp.controllerBindGrpZro05, lidCornerCtrlOut)
-        mc.parent(self.eyelidDown.controllerBindGrpZro05, lidCornerCtrlOut)
+        mc.parent(self.eyelidUp.bindJntGrp, self.eyelidDown.bindJntGrp,  self.eyelidUp.grpDrvCtrl, self.eyelidDown.grpDrvCtrl,
+                  lidCornerCtrlIn[1], lidCornerCtrlOut[1], self.eyeballCtrl.control)
 
     def cornerReverseNode(self, lidCornerCtrl, side, lidCornerName='', targetUp='', targetDown=''):
         transRev = mc.createNode('multiplyDivide', n=lidCornerName + 'Trans' + side + '_mdn')
@@ -154,7 +144,7 @@ class Eyelid:
         self.parentControlZro = cornerCtrl.parentControl[0]
         self.parentControlOffset = cornerCtrl.parentControl[1]
 
-        return cornerCtrl.control
+        return cornerCtrl.control, cornerCtrl.parentControl[0]
 
     def blinkSetup(self, eyeballJnt, prefixEyeball, prefixEyeballAim, crvUp, crvDown, scale,
                    side, eyelidUp, eyelidDown, positionEyeAimCtrl, worldUpObject, eyeballAimMainCtrl,

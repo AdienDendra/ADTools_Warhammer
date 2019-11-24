@@ -103,6 +103,7 @@ def createFollicleSel(objSel, objMesh, connect = None, prefix=None, suffix=None,
 
     # listing the shape of follicle
     follicleShape = mc.listRelatives(follicleTransform, s=1)[0]
+    mc.setAttr(follicleShape+'.visibility', 0)
 
     if connect:
         connection(connect, follicleTransform, objSel)
