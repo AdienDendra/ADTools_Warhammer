@@ -71,7 +71,7 @@ class Eyelid:
                   self.eyelidDown.jointGrp, self.eyelidDown.locatorGrp,
                   self.eyelidDown.curvesGrp, self.eyelidDown.jointGrp,  blink
                   )
-
+        self.blink = blink
 
     # ==================================================================================================================
     #                                                  CORNER CONTROLLER

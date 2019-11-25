@@ -1,5 +1,6 @@
 from rigModule import mainSecondaryModule as ms, eyelidModule as em, lipModule as lm
 import skeletonDriverModule as sd
+import maya.cmds as mc
 
 reload(ms)
 reload(sd)
@@ -24,6 +25,8 @@ def buildRig(scale=1.0,
 # ======================================================================================================================
 #                                              DUPLICATE JOINTS AS DRIVER
 # ======================================================================================================================
+    ctrlGrp = mc.group(em=1, n='ctrl_grp')
+    utilsGrp = mc.group(em=1, n='utils_grp')
 
     sj = sd.listFaceSkeletonDuplicate(objDuplicate='neck01Tmp_jnt',
                                       valuePrefix='',
@@ -31,45 +34,51 @@ def buildRig(scale=1.0,
                                       suffix='jnt'
                                       )
 
-    mainFace = ms.MainFace(neckJnt=sj.neck,
-                 headJnt=sj.head01,
-                 headUpJnt=sj.headUp01,
-                 earLFTJnt=sj.earLFT,
-                 earRGTJnt=sj.earRGT,
-                 headLowJnt=sj.headLow01,
-                 jawJnt=sj.jaw01,
-                 noseJnt=sj.nose,
-                 noseTipJnt=sj.noseTip,
-                 chinJnt=sj.chin,
-                 scale=scale,
-                 nostrilLFTJnt=sj.nostrilLFT,
-                 cheekUpLFTJnt=sj.cheekUpLFT,
-                 cheekDownLFTJnt=sj.cheekDownLFT,
-                 eyebrowInLFTJnt=sj.eyebrowInLFT,
-                 eyebrowMidLFTJnt=sj.eyebrowMidLFT,
-                 eyebrowOutLFTJnt=sj.eyebrowOutLFT,
-                 browInLFTJnt=sj.browInLFT,
-                 browMidLFTJnt=sj.browMidLFT,
-                 browOutLFTJnt=sj.browOutLFT,
-                 eyelidPinchLFTJnt=sj.eyelidPinchLFT,
-                 nostrilRGTJnt=sj.nostrilRGT,
-                 cheekUpRGTJnt=sj.cheekUpRGT,
-                 cheekDownRGTJnt=sj.cheekDownRGT,
-                 eyebrowInRGTJnt=sj.eyebrowInRGT,
-                 eyebrowMidRGTJnt=sj.eyebrowMidRGT,
-                 eyebrowOutRGTJnt=sj.eyebrowOutRGT,
-                 browInRGTJnt=sj.browInRGT,
-                 browMidRGTJnt=sj.browMidRGT,
-                 browOutRGTJnt=sj.browOutRGT,
-                 eyelidPinchRGTJnt=sj.eyelidPinchRGT,
-                 sideLFT=sideLFT,
-                 sideRGT=sideRGT,
-                 eyeballJntLFT=sj.eyeballLFT,
-                 eyeballJntRGT=sj.eyeballRGT,
-                 prefixEyeballAim=eyeballAim,
-                 positionEyeAimCtrl=positionEyeAimCtrl,
-                 objectFolMesh=objectFolMesh,
-               )
+    mainFace = ms.MainFace(ctrlGrp=ctrlGrp,
+                           neckJnt=sj.neck,
+                         headJnt=sj.head01,
+                         headUpJnt=sj.headUp01,
+                         earLFTJnt=sj.earLFT,
+                         earRGTJnt=sj.earRGT,
+                         headLowJnt=sj.headLow01,
+                         jawJnt=sj.jaw01,
+                         upperTeethJnt=sj.upperTeeth,
+                         lowerTeethJnt=sj.lowerTeeth,
+                         tongue01Jnt=sj.tongue01,
+                         tongue02Jnt=sj.tongue02,
+                         tongue03Jnt=sj.tongue03,
+                         tongue04Jnt=sj.tongue04,
+                         noseTipJnt=sj.noseTip,
+                         chinJnt=sj.chin,
+                         scale=scale,
+                         nostrilLFTJnt=sj.nostrilLFT,
+                         cheekUpLFTJnt=sj.cheekUpLFT,
+                         cheekDownLFTJnt=sj.cheekDownLFT,
+                         eyebrowInLFTJnt=sj.eyebrowInLFT,
+                         eyebrowMidLFTJnt=sj.eyebrowMidLFT,
+                         eyebrowOutLFTJnt=sj.eyebrowOutLFT,
+                         browInLFTJnt=sj.browInLFT,
+                         browMidLFTJnt=sj.browMidLFT,
+                         browOutLFTJnt=sj.browOutLFT,
+                         eyelidPinchLFTJnt=sj.eyelidPinchLFT,
+                         nostrilRGTJnt=sj.nostrilRGT,
+                         cheekUpRGTJnt=sj.cheekUpRGT,
+                         cheekDownRGTJnt=sj.cheekDownRGT,
+                         eyebrowInRGTJnt=sj.eyebrowInRGT,
+                         eyebrowMidRGTJnt=sj.eyebrowMidRGT,
+                         eyebrowOutRGTJnt=sj.eyebrowOutRGT,
+                         browInRGTJnt=sj.browInRGT,
+                         browMidRGTJnt=sj.browMidRGT,
+                         browOutRGTJnt=sj.browOutRGT,
+                         eyelidPinchRGTJnt=sj.eyelidPinchRGT,
+                         sideLFT=sideLFT,
+                         sideRGT=sideRGT,
+                         eyeballJntLFT=sj.eyeballLFT,
+                         eyeballJntRGT=sj.eyeballRGT,
+                         prefixEyeballAim=eyeballAim,
+                         positionEyeAimCtrl=positionEyeAimCtrl,
+                         objectFolMesh=objectFolMesh,
+                       )
 
     eyelidLFT = em.Eyelid(crvUp='eyelidUpLFT_crv',
                           crvDown='eyelidDownLFT_crv',
@@ -122,3 +131,9 @@ def buildRig(scale=1.0,
                  sideLFT=sideLFT,
                  sideRGT=sideRGT
                  )
+
+    # PARENT TO THE GROUP
+    mc.parent(mainFace.neckCtrlGrp, mainFace.ctrlFaceGroup, mainFace.eyeballAimMainCtrlGrp,
+              mainFace.headCtrlGrp, lip.lipGroup, ctrlGrp)
+
+    mc.parent('mainJnt_grp', 'faceCrv_grp', eyelidLFT.blink, eyelidRGT.blink, utilsGrp)

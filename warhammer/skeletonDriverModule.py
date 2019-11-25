@@ -99,4 +99,15 @@ class listFaceSkeletonDuplicate:
         # EAR
         self.earLFT = sj['%s%s%s%s_%s' % ('ear', oriPrefix, keyPrefix, 'LFT', suffix)]
         self.earRGT = sj['%s%s%s%s_%s' % ('ear', oriPrefix, keyPrefix, 'RGT', suffix)]
+
+        # TEETH
+        self.upperTeeth = sj['%s%s%s_%s' % ('upperTeeth', oriPrefix, keyPrefix, suffix)]
+        self.lowerTeeth = sj['%s%s%s_%s' % ('lowerTeeth', oriPrefix, keyPrefix, suffix)]
+
+        # TOUNGE
+        self.tongue01 = sj['%s%s%s_%s' % ('tongue01', oriPrefix, keyPrefix, suffix)]
+        self.tongue02 = sj['%s%s%s_%s' % ('tongue02', oriPrefix, keyPrefix, suffix)]
+        self.tongue03 = sj['%s%s%s_%s' % ('tongue03', oriPrefix, keyPrefix, suffix)]
+        self.tongue04 = sj['%s%s%s_%s' % ('tongue04', oriPrefix, keyPrefix, suffix)]
+
         # mc.parent(self.neck, 'tmpJnt_grp')

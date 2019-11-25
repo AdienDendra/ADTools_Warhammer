@@ -90,3 +90,5 @@ class Lip:
 
         mc.parent(follTransMid, lipLFT.follicleTransformAll, lipRGT.follicleTransformAll, lipGroup)
 
+        self.lipGroup = lipGroup
+

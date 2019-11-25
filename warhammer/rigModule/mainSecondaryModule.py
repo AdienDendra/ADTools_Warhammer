@@ -9,12 +9,18 @@ reload(au)
 
 class MainFace:
     def __init__(self,
+                 ctrlGrp,
                  neckJnt,
                  headJnt,
                  headUpJnt,
                  headLowJnt,
                  jawJnt,
-                 noseJnt,
+                 upperTeethJnt,
+                 lowerTeethJnt,
+                 tongue01Jnt,
+                 tongue02Jnt,
+                 tongue03Jnt,
+                 tongue04Jnt,
                  earLFTJnt,
                  earRGTJnt,
                  noseTipJnt,
@@ -52,13 +58,20 @@ class MainFace:
         # BUILD CONTROLLER
         ctrlFaceGroup = mc.group(em=1, n='faceCtrl_grp')
 
-        main = mn.Build(objectFolMesh=objectFolMesh,
+
+        main = mn.Build(ctrlGrp=ctrlGrp,
+                        objectFolMesh=objectFolMesh,
                         neckJnt=neckJnt,
                          headJnt=headJnt,
                          headUpJnt=headUpJnt,
                          headLowJnt=headLowJnt,
                          jawJnt=jawJnt,
-                         noseJnt=noseJnt,
+                        upperTeethJnt=upperTeethJnt,
+                        lowerTeethJnt=lowerTeethJnt,
+                        tongue01Jnt=tongue01Jnt,
+                        tongue02Jnt=tongue02Jnt,
+                        tongue03Jnt=tongue03Jnt,
+                        tongue04Jnt=tongue04Jnt,
                          noseTipJnt=noseTipJnt,
                          chinJnt=chinJnt,
                          scale=scale,
@@ -68,7 +81,6 @@ class MainFace:
                          positionEyeAimCtrl=positionEyeAimCtrl,
                         )
 
-        self.eyeballAimMainCtrl = main.eyeballAimMainCtrl
 
         secLFT = sc.Build(objectFolMesh=objectFolMesh,
                           nostrilJnt=nostrilLFTJnt,
@@ -109,6 +121,12 @@ class MainFace:
         mc.parent(secLFT.eyebrowCtrlGrp, secRGT.eyebrowCtrlGrp, main.headUpCtrl)
         mc.parent(secLFT.earCtrlGrp, secRGT.earCtrlGrp, main.headCtrl)
         mc.parent(secLFT.follicleTransformAll, secRGT.follicleTransformAll, main.follicleTransformAll, ctrlFaceGroup)
+
+        self.ctrlFaceGroup = ctrlFaceGroup
+        self.neckCtrlGrp = main.neckCtrlGrp
+        self.eyeballAimMainCtrlGrp = main.eyeballAimMainCtrlGrp
+        self.eyeballAimMainCtrl = main.eyeballAimMainCtrl
+        self.headCtrlGrp = main.headCtrlGrp
 
         # # coonect nose ctrl to ctrl nostril offset grp LFT
         # au.connectAttrObject(main.noseCtrl, secLFT.nostrilCtrlOffset)
