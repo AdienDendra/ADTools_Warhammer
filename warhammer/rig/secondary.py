@@ -6,6 +6,7 @@ reload(ac)
 class Build:
     def __init__(self,
                  nostrilJnt,
+                 earJnt,
                  cheekUpJnt,
                  cheekDownJnt,
                  eyebrowInJnt,
@@ -29,19 +30,11 @@ class Build:
                                       ctrlSize=scale * 0.5,
                                       ctrlColor='yellow', lockChannels=['v'], side=side)
 
-        self.nostrilCtrl = nostrilCtrl.control
-        self.nostrilCtrlGrp = nostrilCtrl.parentControl[0]
-        self.nostrilCtrlOffset = nostrilCtrl.parentControl[1]
-
-
         cheekUpCtrl = ac.Control(matchPos=cheekUpJnt,
                                       prefix='cheekUp',
                                       shape=ac.JOINT, groupsCtrl=[''],
                                       ctrlSize=scale * 1.0,
                                       ctrlColor='yellow', lockChannels=['v'], side=side)
-
-        self.cheekUpCtrl = cheekUpCtrl.control
-        self.cheekUpCtrlGrp = cheekUpCtrl.parentControl[0]
 
         cheekDownCtrl = ac.Control(matchPos=cheekDownJnt,
                                         prefix='cheekDown',
@@ -49,17 +42,11 @@ class Build:
                                         ctrlSize=scale * 1.0,
                                         ctrlColor='yellow', lockChannels=['v'], side=side)
 
-        self.cheekDownCtrl = cheekDownCtrl.control
-        self.cheekDownCtrlGrp = cheekDownCtrl.parentControl[0]
-
         eyebrowInCtrl = ac.Control(matchPos=eyebrowInJnt,
                                         prefix='eyebrowIn',
                                         shape=ac.CUBE, groupsCtrl=[''],
                                         ctrlSize=scale * 0.5,
                                         ctrlColor='blue', lockChannels=['v'], side=side)
-
-        self.eyebrowInCtrl = eyebrowInCtrl.control
-        self.eyebrowInCtrlGrp = eyebrowInCtrl.parentControl[0]
 
         eyebrowMidCtrl = ac.Control(matchPos=eyebrowMidJnt,
                                          prefix='eyebrowMid',
@@ -67,17 +54,11 @@ class Build:
                                          ctrlSize=scale * 0.5,
                                          ctrlColor='blue', lockChannels=['v'], side=side)
 
-        self.eyebrowMidCtrl = eyebrowMidCtrl.control
-        self.eyebrowMidCtrlGrp = eyebrowMidCtrl.parentControl[0]
-
         eyebrowOutCtrl = ac.Control(matchPos=eyebrowOutJnt,
                                          prefix='eyebrowOut',
                                          shape=ac.CUBE, groupsCtrl=[''],
                                          ctrlSize=scale * 0.5,
                                          ctrlColor='blue', lockChannels=['v'], side=side)
-
-        self.eyebrowOutCtrl = eyebrowOutCtrl.control
-        self.eyebrowOutCtrlGrp = eyebrowOutCtrl.parentControl[0]
 
         eyebrowCtrl = ac.Control(matchPos=eyebrowInJnt,
                                  matchPosTwo=eyebrowOutJnt,
@@ -86,37 +67,11 @@ class Build:
                                  ctrlSize=scale * 3.0,
                                  ctrlColor='yellow', lockChannels=['v'], side=side)
 
-        self.eyebrowCtrl = eyebrowCtrl.control
-        self.eyebrowCtrlGrp = eyebrowCtrl.parentControl[0]
-
-        # grouping for offset
-        mc.select(cl=1)
-        self.ctrlGrpEyebrowInCenter = mc.group(em=1, n='eyebrowInCtrlCenter'+side+ '_grp')
-        self.ctrlOffsetGrpEyebrowInCenter = mc.group(em=1, n='eyebrowInCtrlOffsetCenter'+ side +'_grp')
-        mc.parent(self.ctrlOffsetGrpEyebrowInCenter, self.ctrlGrpEyebrowInCenter)
-
-        mc.select(cl=1)
-        self.ctrlGrpEyebrowMidCenter = mc.group(em=1, n='eyebrowMidCtrlCenter'+side+ '_grp')
-        self.ctrlOffsetGrpEyebrowMidCenter = mc.group(em=1, n='eyebrowMidCtrlOffsetCenter'+ side +'_grp')
-        mc.parent(self.ctrlOffsetGrpEyebrowMidCenter, self.ctrlGrpEyebrowMidCenter)
-
-        mc.select(cl=1)
-        self.ctrlGrpEyebrowOutCenter = mc.group(em=1, n='eyebrowOutCtrlCenter'+side+ '_grp')
-        self.ctrlOffsetGrpEyebrowOutCenter = mc.group(em=1, n='eyebrowOutCtrlOffsetCenter'+ side +'_grp')
-        mc.parent(self.ctrlOffsetGrpEyebrowOutCenter, self.ctrlGrpEyebrowOutCenter)
-
-        mc.delete(mc.parentConstraint(self.eyebrowCtrl, self.ctrlGrpEyebrowInCenter))
-        mc.delete(mc.parentConstraint(self.eyebrowCtrl, self.ctrlGrpEyebrowMidCenter))
-        mc.delete(mc.parentConstraint(self.eyebrowCtrl, self.ctrlGrpEyebrowOutCenter))
-
         browInCtrl = ac.Control(matchPos=browInJnt,
                                      prefix='browIn',
                                      shape=ac.JOINT, groupsCtrl=[''],
                                      ctrlSize=scale * 0.4,
                                      ctrlColor='red', lockChannels=['v'], side=side)
-
-        self.browInCtrl = browInCtrl.control
-        self.browInCtrlGrp = browInCtrl.parentControl[0]
 
         browMidCtrl = ac.Control(matchPos=browMidJnt,
                                       prefix='browMid',
@@ -124,26 +79,94 @@ class Build:
                                       ctrlSize=scale * 0.4,
                                       ctrlColor='red', lockChannels=['v'], side=side)
 
-        self.browMidCtrl = browMidCtrl.control
-        self.browMidCtrlGrp = browMidCtrl.parentControl[0]
-
         browOutCtrl = ac.Control(matchPos=browOutJnt,
                                       prefix='browOut',
                                       shape=ac.JOINT, groupsCtrl=[''],
                                       ctrlSize=scale * 0.4,
                                       ctrlColor='red', lockChannels=['v'], side=side)
 
-        self.browOutCtrl = browOutCtrl.control
-        self.browOutCtrlGrp = browOutCtrl.parentControl[0]
-
         eyelidPinchCtrl = ac.Control(matchPos=eyelidPinchJnt,
                                       prefix='eyelidPinch',
                                       shape=ac.JOINT, groupsCtrl=[''],
                                       ctrlSize=scale * 1.0,
                                       ctrlColor='blue', lockChannels=['v'], side=side)
+
+        earCtrl = ac.Control(matchPos=earJnt,
+                                      prefix='ear',
+                                      shape=ac.CUBE, groupsCtrl=[''],
+                                      ctrlSize=scale * 1.0,
+                                      ctrlColor='blue', lockChannels=['v'], side=side)
+
+
+    # ==================================================================================================================
+    #                                            ASSIGNING THE INSTANCE NAME
+    # ==================================================================================================================
+
+        self.nostrilCtrl = nostrilCtrl.control
+        self.nostrilCtrlGrp = nostrilCtrl.parentControl[0]
+        self.nostrilCtrlOffset = nostrilCtrl.parentControl[1]
+
+        self.cheekUpCtrl = cheekUpCtrl.control
+        self.cheekUpCtrlGrp = cheekUpCtrl.parentControl[0]
+
+        self.cheekDownCtrl = cheekDownCtrl.control
+        self.cheekDownCtrlGrp = cheekDownCtrl.parentControl[0]
+
+        self.eyebrowInCtrl = eyebrowInCtrl.control
+        self.eyebrowInCtrlGrp = eyebrowInCtrl.parentControl[0]
+
+        self.eyebrowMidCtrl = eyebrowMidCtrl.control
+        self.eyebrowMidCtrlGrp = eyebrowMidCtrl.parentControl[0]
+
+        self.eyebrowOutCtrl = eyebrowOutCtrl.control
+        self.eyebrowOutCtrlGrp = eyebrowOutCtrl.parentControl[0]
+
+        self.eyebrowCtrl = eyebrowCtrl.control
+        self.eyebrowCtrlGrp = eyebrowCtrl.parentControl[0]
+
+        self.browInCtrl = browInCtrl.control
+        self.browInCtrlGrp = browInCtrl.parentControl[0]
+
+        self.browMidCtrl = browMidCtrl.control
+        self.browMidCtrlGrp = browMidCtrl.parentControl[0]
+
+        self.browOutCtrl = browOutCtrl.control
+        self.browOutCtrlGrp = browOutCtrl.parentControl[0]
+
         self.eyelidPinchCtrl = eyelidPinchCtrl.control
         self.eyelidPinchCtrlGrp = eyelidPinchCtrl.parentControl[0]
 
+        self.earCtrl = earCtrl.control
+        self.earCtrlGrp = earCtrl.parentControl[0]
+
+    # ==================================================================================================================
+    #                                           EYEBROW CONTROLLER SETUP
+    # ==================================================================================================================
+        mc.parent(self.eyebrowInCtrlGrp, self.eyebrowMidCtrlGrp, self.eyebrowOutCtrlGrp,
+                  self.eyebrowCtrl)
+
+        # grouping for offset
+        mc.select(cl=1)
+        self.ctrlGrpEyebrowInCenter = mc.group(em=1, n='eyebrowInCtrlCenter' + side + '_grp')
+        self.ctrlOffsetGrpEyebrowInCenter = mc.group(em=1, n='eyebrowInCtrlOffsetCenter' + side + '_grp')
+        mc.parent(self.ctrlOffsetGrpEyebrowInCenter, self.ctrlGrpEyebrowInCenter)
+
+        mc.select(cl=1)
+        self.ctrlGrpEyebrowMidCenter = mc.group(em=1, n='eyebrowMidCtrlCenter' + side + '_grp')
+        self.ctrlOffsetGrpEyebrowMidCenter = mc.group(em=1, n='eyebrowMidCtrlOffsetCenter' + side + '_grp')
+        mc.parent(self.ctrlOffsetGrpEyebrowMidCenter, self.ctrlGrpEyebrowMidCenter)
+
+        mc.select(cl=1)
+        self.ctrlGrpEyebrowOutCenter = mc.group(em=1, n='eyebrowOutCtrlCenter' + side + '_grp')
+        self.ctrlOffsetGrpEyebrowOutCenter = mc.group(em=1, n='eyebrowOutCtrlOffsetCenter' + side + '_grp')
+        mc.parent(self.ctrlOffsetGrpEyebrowOutCenter, self.ctrlGrpEyebrowOutCenter)
+
+        mc.delete(mc.parentConstraint(self.eyebrowCtrl, self.ctrlGrpEyebrowInCenter))
+        mc.delete(mc.parentConstraint(self.eyebrowCtrl, self.ctrlGrpEyebrowMidCenter))
+        mc.delete(mc.parentConstraint(self.eyebrowCtrl, self.ctrlGrpEyebrowOutCenter))
+
+
+    # CREATE GROUP CORESPONDENT THE JOINTS
         au.createParentTransform(listparent=['', 'Offset'], object=nostrilJnt, matchPos=nostrilJnt, prefix='nostril', suffix='_jnt', side=side)
         au.createParentTransform(listparent=[''], object=cheekUpJnt, matchPos=cheekUpJnt, prefix='cheekUp', suffix='_jnt', side=side)
         self.cheekDownJntGrp = au.createParentTransform(listparent=[''], object=cheekDownJnt, matchPos=cheekDownJnt, prefix='cheekDown', suffix='_jnt', side=side)
@@ -155,7 +178,7 @@ class Build:
         au.createParentTransform(listparent=[''], object=browOutJnt, matchPos=browOutJnt, prefix='browOut', suffix='_jnt', side=side)
         au.createParentTransform(listparent=[''], object=eyelidPinchJnt, matchPos=eyelidPinchJnt, prefix='eyelidPinch', suffix='_jnt', side=side)
 
-    # flipping the controller
+    # FLIPPING THE CONTROLLER
         if pos <0:
             mc.setAttr(self.nostrilCtrlGrp+ '.scaleX', -1)
             mc.setAttr(self.cheekUpCtrlGrp + '.scaleX', -1)
@@ -171,6 +194,8 @@ class Build:
             mc.setAttr(self.ctrlGrpEyebrowInCenter+ '.scaleX', -1)
             mc.setAttr(self.ctrlGrpEyebrowMidCenter+ '.scaleX', -1)
             mc.setAttr(self.ctrlGrpEyebrowOutCenter+ '.scaleX', -1)
+            mc.setAttr(self.earCtrlGrp+ '.scaleX', -1)
+
 
             self.reverseNode(self.nostrilCtrl, nostrilJnt)
             self.reverseNode(self.cheekUpCtrl, cheekUpJnt)
@@ -182,6 +207,8 @@ class Build:
             self.reverseNode(self.browMidCtrl, browMidJnt)
             self.reverseNode(self.browOutCtrl, browOutJnt)
             self.reverseNode(self.eyelidPinchCtrl, eyelidPinchJnt)
+            self.reverseNode(self.earCtrl, earJnt)
+
 
             au.connectAttrScale(self.nostrilCtrl, nostrilJnt)
             au.connectAttrScale(self.cheekUpCtrl, cheekUpJnt)
@@ -193,6 +220,7 @@ class Build:
             au.connectAttrScale(self.browMidCtrl, browMidJnt)
             au.connectAttrScale(self.browOutCtrl, browOutJnt)
             au.connectAttrScale(self.eyelidPinchCtrl, eyelidPinchJnt)
+
 
         else:
             au.connectAttrObject(self.nostrilCtrl, nostrilJnt)
@@ -206,9 +234,11 @@ class Build:
             au.connectAttrObject(self.browOutCtrl, browOutJnt)
             au.connectAttrObject(self.eyelidPinchCtrl, eyelidPinchJnt)
 
-        mc.parent(self.eyebrowInCtrlGrp, self.eyebrowMidCtrlGrp, self.eyebrowOutCtrlGrp,
-                  self.eyebrowCtrl)
+        # CONSTRAINT EARS
+        mc.parentConstraint(self.earCtrl, earJnt, mo=1)
+        mc.scaleConstraint(self.earCtrl, earJnt, mo=1)
 
+        # CONTROLLER ACCORDING THE FOLLICLE
         object = [self.nostrilCtrlGrp, self.cheekUpCtrlGrp, self.cheekDownCtrlGrp, self.eyebrowInCtrlGrp, self.eyebrowMidCtrlGrp,
                   self.eyebrowOutCtrlGrp, self.browInCtrlGrp, self.browMidCtrlGrp, self.browOutCtrlGrp, self.eyelidPinchCtrlGrp]
 
@@ -217,6 +247,8 @@ class Build:
             follicleTransform = au.createFollicleSel(objSel=i, objMesh=objectFolMesh, connectFol=['transConn', 'rotateConn'])[0]
             mc.parent(i, follicleTransform)
             self.follicleTransformAll.append(follicleTransform)
+
+    # EYEBROW EXCEPTION PARENTING CTRL
 
         # grouping to follicle
         mc.parent(self.ctrlGrpEyebrowInCenter,  self.follicleTransformAll[3])

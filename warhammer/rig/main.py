@@ -29,8 +29,6 @@ class Build:
                                    ctrlSize=scale * 15.0,
                                    ctrlColor='yellow', lockChannels=['v'],
                                    connect=['parentCons', 'scaleCons'])
-        self.neckCtrl = neckCtrl.control
-        self.neckCtrlGrp = neckCtrl.parentControl[0]
 
         headCtrl = ac.Control(matchPos=headJnt,
                                    prefix=headJnt,
@@ -39,18 +37,12 @@ class Build:
                                    ctrlColor='blue', lockChannels=['v'],
                                    connect=['parentCons', 'scaleCons'])
 
-        self.headCtrl = headCtrl.control
-        self.headCtrlGrp = headCtrl.parentControl[0]
-
         headUpCtrl = ac.Control(matchPos=headUpJnt,
                                      prefix=headUpJnt,
                                      shape=ac.CIRCLEHALF, groupsCtrl=[''],
                                      ctrlSize=scale * 10.0,
                                      ctrlColor='red', lockChannels=['v'],
                                      connect=['parentCons', 'scaleCons'])
-
-        self.headUpCtrl = headUpCtrl.control
-        self.headUpCtrlGrp = headUpCtrl.parentControl[0]
 
         headLowCtrl = ac.Control(matchPos=headLowJnt,
                                       prefix=headLowJnt,
@@ -59,9 +51,6 @@ class Build:
                                       ctrlColor='red', lockChannels=['v'],
                                       connect=['parentCons', 'scaleCons'])
 
-        self.headLowCtrl = headLowCtrl.control
-        self.headLowCtrlGrp = headLowCtrl.parentControl[0]
-
         jawCtrl = ac.Control(matchPos=jawJnt,
                                   prefix=jawJnt,
                                   shape=ac.SQUAREPLUS, groupsCtrl=[''],
@@ -69,22 +58,21 @@ class Build:
                                   ctrlColor='yellow', lockChannels=['v','s'],
                                   connect=['parentCons', 'scaleCons'])
 
-        self.jawCtrl = jawCtrl.control
-        self.jawCtrlGrp = jawCtrl.parentControl[0]
-
         noseTipCtrl = ac.Control(matchPos=noseTipJnt,
                                       prefix=noseTipJnt,
                                       shape=ac.JOINT, groupsCtrl=['','Offset'],
                                       ctrlSize=scale * 1.0,
                                       ctrlColor='yellow', lockChannels=['v'])
 
-        self.noseTipCtrl = noseTipCtrl.control
-        self.noseTipCtrlGrp = noseTipCtrl.parentControl[0]
-        self.noseTipCtrlOffset = noseTipCtrl.parentControl[1]
+        chinCtrl = ac.Control(matchPos=chinJnt,
+                                   prefix=chinJnt,
+                                   shape=ac.JOINT, groupsCtrl=[''],
+                                   ctrlSize=scale * 1.0,
+                                   ctrlColor='yellow', lockChannels=['v'],
+                                   connect=['parentCons', 'scaleCons'])
 
-        noseTipGrp = au.createParentTransform(listparent=[''], object=noseTipJnt, matchPos=noseTipJnt, prefix='noseTip', suffix='_jnt')
 
-        au.connectAttrObject(self.noseTipCtrl, noseTipJnt)
+
 
         # noseCtrl = ac.Control(matchPos=noseJnt,
         #                            prefix=noseJnt,
@@ -100,18 +88,43 @@ class Build:
         # # connect nose ctrl to nostip grp ctrl
         # au.connectAttrObject(self.noseCtrl, self.noseTipCtrlOffset)
 
-        chinCtrl = ac.Control(matchPos=chinJnt,
-                                   prefix=chinJnt,
-                                   shape=ac.JOINT, groupsCtrl=[''],
-                                   ctrlSize=scale * 1.0,
-                                   ctrlColor='yellow', lockChannels=['v'],
-                                   connect=['parentCons', 'scaleCons'])
+
+
+    # ==================================================================================================================
+    #                                            ASSIGNING THE INSTANCE NAME
+    # ==================================================================================================================
+        self.neckCtrl = neckCtrl.control
+        self.neckCtrlGrp = neckCtrl.parentControl[0]
+
+        self.headCtrl = headCtrl.control
+        self.headCtrlGrp = headCtrl.parentControl[0]
+
+        self.headUpCtrl = headUpCtrl.control
+        self.headUpCtrlGrp = headUpCtrl.parentControl[0]
+
+        self.headLowCtrl = headLowCtrl.control
+        self.headLowCtrlGrp = headLowCtrl.parentControl[0]
+
+        self.jawCtrl = jawCtrl.control
+        self.jawCtrlGrp = jawCtrl.parentControl[0]
+
+        self.noseTipCtrl = noseTipCtrl.control
+        self.noseTipCtrlGrp = noseTipCtrl.parentControl[0]
+        self.noseTipCtrlOffset = noseTipCtrl.parentControl[1]
 
         self.chinCtrl = chinCtrl.control
         self.chinCtrlGrp = chinCtrl.parentControl[0]
 
+    # CREATE GROUP CORESPONDENT THE JOINTS
+        au.createParentTransform(listparent=[''], object=noseTipJnt, matchPos=noseTipJnt, prefix='noseTip', suffix='_jnt')
+        au.connectAttrObject(self.noseTipCtrl, noseTipJnt)
+
+    # ==================================================================================================================
+    #                                CONTROLLER CORRESPONDING TO FOLLICLE
+    # ==================================================================================================================
+
         # group to follicle
-        object = [self.noseTipCtrlGrp]
+        object = [self.noseTipCtrlGrp, self.chinCtrlGrp]
 
         self.follicleTransformAll=[]
         for i in object:
@@ -120,9 +133,9 @@ class Build:
             self.follicleTransformAll.append(follicleTransform)
 
 
-        # ==============================================================================================================
-        #                                       CREATE AIM FOR EYEBALL
-        # ==============================================================================================================
+    # ==================================================================================================================
+    #                                       CREATE AIM FOR EYEBALL
+    # ==================================================================================================================
 
         eyeballAimMainCtrl = ac.Control(matchPos=eyeballJntLFT,
                                         matchPosTwo=eyeballJntRGT,
@@ -138,8 +151,6 @@ class Build:
 
 
         # PARENTING GRP
-        mc.parent(self.chinCtrlGrp, self.jawCtrl)
         mc.parent(self.jawCtrlGrp, self.headLowCtrl)
-
         mc.parent(self.headLowCtrlGrp, self.headUpCtrlGrp, self.headCtrl)
         mc.parent(self.headCtrlGrp, self.neckCtrl)

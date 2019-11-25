@@ -17,26 +17,25 @@ def buildRig(scale=1.0,
              directionLid02=10,
              sideLFT='LFT',
              sideRGT='RGT',
-             objectFolMesh='captainFol_ply'
+             eyeballAim='eyeballAim',
+             eyeball='eyeball',
+             objectFolMesh='captainCtrlFol_ply'
              ):
 # ======================================================================================================================
 #                                              DUPLICATE JOINTS AS DRIVER
 # ======================================================================================================================
+
     sj = sd.listFaceSkeletonDuplicate(objDuplicate='neck01Tmp_jnt',
                                       valuePrefix='',
                                       keyPrefix='Ori',
                                       suffix='jnt'
                                       )
 
-    # ss = sd.listFaceSkeletonDuplicate(objDuplicate='neck01Tmp_jnt',
-    #                                   valuePrefix=ScaleDriver,
-    #                                   keyPrefix='Scl',
-    #                                   suffix='jnt'
-    #                                   )
-
     mainFace = ms.MainFace(neckJnt=sj.neck,
                  headJnt=sj.head01,
                  headUpJnt=sj.headUp01,
+                 earLFTJnt=sj.earLFT,
+                 earRGTJnt=sj.earRGT,
                  headLowJnt=sj.headLow01,
                  jawJnt=sj.jaw01,
                  noseJnt=sj.nose,
@@ -67,7 +66,7 @@ def buildRig(scale=1.0,
                  sideRGT=sideRGT,
                  eyeballJntLFT=sj.eyeballLFT,
                  eyeballJntRGT=sj.eyeballRGT,
-                 prefixEyeballAim='eyeballAim',
+                 prefixEyeballAim=eyeballAim,
                  positionEyeAimCtrl=positionEyeAimCtrl,
                  objectFolMesh=objectFolMesh,
                )
@@ -76,14 +75,15 @@ def buildRig(scale=1.0,
                           crvDown='eyelidDownLFT_crv',
                           headUpJoint=sj.headUp01,
                           eyeballJnt=sj.eyeballLFT,
-                          prefixEyeball='eyeball',
-                          prefixEyeballAim='eyeballAim',
+                          prefixEyeball=eyeball,
+                          prefixEyeballAim=eyeballAim,
                           scale=scale,
                           side=sideLFT,
                           directionLid01=directionLid01,
                           directionLid02=directionLid02,
                           positionEyeAimCtrl=positionEyeAimCtrl,
-                          eyeballAimMainCtrl=mainFace.eyeballAimMainCtrl
+                          eyeballAimMainCtrl=mainFace.eyeballAimMainCtrl,
+                          headUpCtrl=mainFace.headUpCtrlGrpParent
                           )
 
 
@@ -91,14 +91,15 @@ def buildRig(scale=1.0,
                           crvDown='eyelidDownRGT_crv',
                           headUpJoint=sj.headUp01,
                           eyeballJnt=sj.eyeballRGT,
-                          prefixEyeball='eyeball',
-                          prefixEyeballAim='eyeballAim',
+                          prefixEyeball=eyeball,
+                          prefixEyeballAim=eyeballAim,
                           scale=scale,
                           side=sideRGT,
                           directionLid01=directionLid01,
                           directionLid02=directionLid02,
                           positionEyeAimCtrl=positionEyeAimCtrl,
-                          eyeballAimMainCtrl=mainFace.eyeballAimMainCtrl
+                          eyeballAimMainCtrl=mainFace.eyeballAimMainCtrl,
+                          headUpCtrl = mainFace.headUpCtrlGrpParent
                           )
 
     lip = lm.Lip(objectFolMesh=objectFolMesh,
@@ -119,4 +120,5 @@ def buildRig(scale=1.0,
                  directionLip01=directionLip01,
                  directionLip02=directionLip02,
                  sideLFT=sideLFT,
-                 sideRGT=sideRGT)
+                 sideRGT=sideRGT
+                 )

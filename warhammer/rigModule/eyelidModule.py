@@ -19,7 +19,8 @@ class Eyelid:
                  directionLid01,
                  directionLid02,
                  positionEyeAimCtrl,
-                 eyeballAimMainCtrl
+                 eyeballAimMainCtrl,
+                 headUpCtrl
                  ):
 
         worldUpObject = mc.spaceLocator(n='eyeballWorldObj'+side+'_loc')[0]
@@ -110,6 +111,8 @@ class Eyelid:
 
         mc.parent(self.eyelidUp.bindJntGrp, self.eyelidDown.bindJntGrp,  self.eyelidUp.grpDrvCtrl, self.eyelidDown.grpDrvCtrl,
                   lidCornerCtrlIn[1], lidCornerCtrlOut[1], self.eyeballCtrl.control)
+
+        mc.parent(self.eyeballCtrl.parentControl[0], headUpCtrl)
 
     def cornerReverseNode(self, lidCornerCtrl, side, lidCornerName='', targetUp='', targetDown=''):
         transRev = mc.createNode('multiplyDivide', n=lidCornerName + 'Trans' + side + '_mdn')

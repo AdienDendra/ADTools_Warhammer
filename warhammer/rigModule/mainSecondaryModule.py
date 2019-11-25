@@ -15,6 +15,8 @@ class MainFace:
                  headLowJnt,
                  jawJnt,
                  noseJnt,
+                 earLFTJnt,
+                 earRGTJnt,
                  noseTipJnt,
                  chinJnt,
                  scale,
@@ -70,6 +72,7 @@ class MainFace:
 
         secLFT = sc.Build(objectFolMesh=objectFolMesh,
                           nostrilJnt=nostrilLFTJnt,
+                          earJnt=earLFTJnt,
                                 cheekUpJnt=cheekUpLFTJnt,
                                 cheekDownJnt=cheekDownLFTJnt,
                                 eyebrowInJnt=eyebrowInLFTJnt,
@@ -84,7 +87,8 @@ class MainFace:
 
         secRGT = sc.Build(objectFolMesh=objectFolMesh,
                           nostrilJnt=nostrilRGTJnt,
-                                cheekUpJnt=cheekUpRGTJnt,
+                          earJnt=earRGTJnt,
+                          cheekUpJnt=cheekUpRGTJnt,
                                 cheekDownJnt=cheekDownRGTJnt,
                                 eyebrowInJnt=eyebrowInRGTJnt,
                                 eyebrowMidJnt=eyebrowMidRGTJnt,
@@ -96,9 +100,15 @@ class MainFace:
                                 scale=scale,
                                 side=sideRGT)
 
+        self.headUpCtrlGrpParent = main.headUpCtrlGrp
+
         # constraint
         mc.parentConstraint(headLowJnt, jawJnt, secLFT.cheekDownJntGrp, mo=1)
         mc.parentConstraint(headLowJnt, jawJnt, secRGT.cheekDownJntGrp, mo=1)
+
+        mc.parent(secLFT.eyebrowCtrlGrp, secRGT.eyebrowCtrlGrp, main.headUpCtrl)
+        mc.parent(secLFT.earCtrlGrp, secRGT.earCtrlGrp, main.headCtrl)
+        mc.parent(secLFT.follicleTransformAll, secRGT.follicleTransformAll, main.follicleTransformAll, ctrlFaceGroup)
 
         # # coonect nose ctrl to ctrl nostril offset grp LFT
         # au.connectAttrObject(main.noseCtrl, secLFT.nostrilCtrlOffset)
@@ -121,5 +131,3 @@ class MainFace:
         #           secLFT.eyelidPinchCtrlGrp, secRGT.eyelidPinchCtrlGrp, secLFT.eyebrowCtrlGrp, secRGT.eyebrowCtrlGrp,
         #           secLFT.nostrilCtrlGrp, secRGT.nostrilCtrlGrp, secLFT.cheekDownCtrlGrp, secRGT.cheekDownCtrlGrp,
         #           ctrlFaceGroup)
-
-        mc.parent(secLFT.follicleTransformAll, secRGT.follicleTransformAll, main.follicleTransformAll, ctrlFaceGroup)

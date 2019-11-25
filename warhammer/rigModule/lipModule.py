@@ -64,14 +64,22 @@ class Lip:
                                            ctrlColor='red', lockChannels=['v'])
         self.lipMidDownParentCtrl = self.lipMidDown.parentControl[0]
 
+        au.createParentTransform(listparent=[''], object=lipMidUpJnt, matchPos=lipMidUpJnt, prefix='lipMidUp', suffix='_jnt')
+        au.createParentTransform(listparent=[''], object=lipMidDownJnt, matchPos=lipMidDownJnt, prefix='lipMidDown', suffix='_jnt')
+
+
         mc.setAttr(self.lipMidDown.parentControl[0] + '.scaleY', -1)
 
-        # constraint lip mid
-        mc.parentConstraint(self.lipMidUp.control, lipMidUpJnt, mo=1)
-        mc.parentConstraint(self.lipMidDown.control, lipMidDownJnt, mo=1)
+        au.connectAttrObject(self.lipMidUp.control, lipMidUpJnt)
+        au.connectAttrObject(self.lipMidDown.control, lipMidDownJnt)
 
-        mc.scaleConstraint(self.lipMidUp.control, lipMidUpJnt, mo=1)
-        mc.scaleConstraint(self.lipMidDown.control, lipMidDownJnt, mo=1)
+        # constraint lip mid
+
+        # mc.parentConstraint(self.lipMidUp.control, lipMidUpJnt, mo=1)
+        # mc.parentConstraint(self.lipMidDown.control, lipMidDownJnt, mo=1)
+        #
+        # mc.scaleConstraint(self.lipMidUp.control, lipMidUpJnt, mo=1)
+        # mc.scaleConstraint(self.lipMidDown.control, lipMidDownJnt, mo=1)
 
         object = [self.lipMidUpParentCtrl, self.lipMidDownParentCtrl]
         follTransMid = []

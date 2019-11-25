@@ -96,5 +96,7 @@ class listFaceSkeletonDuplicate:
         self.eyeballLFT = sj['%s%s%s%s_%s' % ('eyeball', oriPrefix, keyPrefix, 'LFT', suffix)]
         self.eyeballRGT = sj['%s%s%s%s_%s' % ('eyeball', oriPrefix, keyPrefix, 'RGT', suffix)]
 
-
+        # EAR
+        self.earLFT = sj['%s%s%s%s_%s' % ('ear', oriPrefix, keyPrefix, 'LFT', suffix)]
+        self.earRGT = sj['%s%s%s%s_%s' % ('ear', oriPrefix, keyPrefix, 'RGT', suffix)]
         # mc.parent(self.neck, 'tmpJnt_grp')
