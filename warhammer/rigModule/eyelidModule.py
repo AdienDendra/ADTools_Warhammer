@@ -65,12 +65,6 @@ class Eyelid:
                                 jointBind03GrpOffsetDown=self.eyelidUp.jointBind03GrpOffset,
                                 jointBind03GrpOffsetUp=self.eyelidDown.jointBind03GrpOffset)
 
-        #PARENT TO GRP
-        mc.parent(self.eyelidUp.jointGrp, self.eyelidUp.locatorGrp,
-                  self.eyelidUp.curvesGrp, self.eyelidUp.jointGrp,
-                  self.eyelidDown.jointGrp, self.eyelidDown.locatorGrp,
-                  self.eyelidDown.curvesGrp, self.eyelidDown.jointGrp,  blink
-                  )
         self.blink = blink
 
     # ==================================================================================================================
@@ -104,13 +98,21 @@ class Eyelid:
             self.cornerReverseNode(lidCornerCtrl=lidCornerCtrlIn[0], side=side, lidCornerName='lidCornerIn',
                                    targetUp=self.eyelidUp.jointBind01Grp[1], targetDown=self.eyelidDown.jointBind01Grp[1])
 
+        # PARENT TO GRP
         mc.parent(self.eyelidUp.controllerBindGrpZro01, lidCornerCtrlIn[0])
         mc.parent(self.eyelidDown.controllerBindGrpZro01, lidCornerCtrlIn[0])
         mc.parent(self.eyelidUp.controllerBindGrpZro05, lidCornerCtrlOut[0])
         mc.parent(self.eyelidDown.controllerBindGrpZro05, lidCornerCtrlOut[0])
 
-        mc.parent(self.eyelidUp.bindJntGrp, self.eyelidDown.bindJntGrp,  self.eyelidUp.grpDrvCtrl, self.eyelidDown.grpDrvCtrl,
-                  lidCornerCtrlIn[1], lidCornerCtrlOut[1], self.eyeballCtrl.control)
+        mc.parent(self.eyelidUp.grpDrvCtrl, self.eyelidDown.grpDrvCtrl, lidCornerCtrlIn[1],
+                  lidCornerCtrlOut[1], self.eyeballCtrl.control)
+
+        mc.parent(self.eyelidUp.bindJntGrp, self.eyelidDown.bindJntGrp,
+                  self.eyelidUp.jointGrp, self.eyelidUp.locatorGrp,
+                  self.eyelidUp.curvesGrp, self.eyelidUp.jointGrp,
+                  self.eyelidDown.jointGrp, self.eyelidDown.locatorGrp,
+                  self.eyelidDown.curvesGrp, self.eyelidDown.jointGrp,  blink
+                  )
 
         mc.parent(self.eyeballCtrl.parentControl[0], headUpCtrl)
 

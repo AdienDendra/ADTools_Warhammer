@@ -25,14 +25,17 @@ def buildRig(scale=1.0,
 # ======================================================================================================================
 #                                              DUPLICATE JOINTS AS DRIVER
 # ======================================================================================================================
-    ctrlGrp = mc.group(em=1, n='ctrl_grp')
-    utilsGrp = mc.group(em=1, n='utils_grp')
+    if mc.objExists('neck01_jnt'):
+        mc.error('%s%s%s' % ('Please remove the',' neck01_jnt ', 'joint first!'))
 
     sj = sd.listFaceSkeletonDuplicate(objDuplicate='neck01Tmp_jnt',
                                       valuePrefix='',
                                       keyPrefix='Ori',
                                       suffix='jnt'
                                       )
+
+    ctrlGrp = mc.group(em=1, n='ctrl_grp')
+    utilsGrp = mc.group(em=1, n='utils_grp')
 
     mainFace = ms.MainFace(ctrlGrp=ctrlGrp,
                            neckJnt=sj.neck,
@@ -42,6 +45,7 @@ def buildRig(scale=1.0,
                          earRGTJnt=sj.earRGT,
                          headLowJnt=sj.headLow01,
                          jawJnt=sj.jaw01,
+                         noseJnt=sj.nose,
                          upperTeethJnt=sj.upperTeeth,
                          lowerTeethJnt=sj.lowerTeeth,
                          tongue01Jnt=sj.tongue01,
@@ -133,7 +137,6 @@ def buildRig(scale=1.0,
                  )
 
     # PARENT TO THE GROUP
-    mc.parent(mainFace.neckCtrlGrp, mainFace.ctrlFaceGroup, mainFace.eyeballAimMainCtrlGrp,
-              mainFace.headCtrlGrp, lip.lipGroup, ctrlGrp)
+    mc.parent(mainFace.neckCtrlGrp, mainFace.ctrlFaceGroup, lip.lipGroup, ctrlGrp)
 
     mc.parent('mainJnt_grp', 'faceCrv_grp', eyelidLFT.blink, eyelidRGT.blink, utilsGrp)

@@ -11,6 +11,7 @@ class Build:
                  headUpJnt,
                  headLowJnt,
                  jawJnt,
+                 noseJnt,
                  upperTeethJnt,
                  lowerTeethJnt,
                  tongue01Jnt,
@@ -76,8 +77,7 @@ class Build:
                                    prefix=chinJnt,
                                    shape=ac.JOINT, groupsCtrl=[''],
                                    ctrlSize=scale * 1.0,
-                                   ctrlColor='yellow', lockChannels=['v'],
-                                   connect=['parentCons', 'scaleCons'])
+                                   ctrlColor='yellow', lockChannels=['v'])
 
         upperTeeth = ac.Control(matchPos=upperTeethJnt,
                                    prefix=upperTeethJnt,
@@ -120,25 +120,6 @@ class Build:
                                    ctrlSize=scale * 1.0,
                                    ctrlColor='turquoiseBlue', lockChannels=['v'],
                                    connect=['parentCons', 'scaleCons'])
-
-
-
-
-
-        # noseCtrl = ac.Control(matchPos=noseJnt,
-        #                            prefix=noseJnt,
-        #                            shape=ac.LOCATOR, groupsCtrl=[''],
-        #                            ctrlSize=scale * 3.0,
-        #                            ctrlColor='blue', lockChannels=['v'])
-        #
-        # self.noseCtrl = noseCtrl.control
-        # self.noseCtrlGrp = noseCtrl.parentControl[0]
-        # tz = mc.getAttr(self.noseCtrlGrp+'.translateZ')
-        # mc.setAttr(self.noseCtrlGrp+'.translateZ', tz+8)
-
-        # # connect nose ctrl to nostip grp ctrl
-        # au.connectAttrObject(self.noseCtrl, self.noseTipCtrlOffset)
-
 
 
     # ==================================================================================================================
@@ -191,11 +172,18 @@ class Build:
         self.localWorld(objectName='head', objectCtrl=self.headCtrl,
                         objectParentGrp=self.headCtrlGrp, objectParentGlobal=self.headCtrlGlobal,
                         objectParentLocal=self.headCtrlLocal,
-                        localBase=neckJnt, worldBase=ctrlGrp, eyeAim=False)
+                        localBase=self.neckCtrl, worldBase=ctrlGrp, eyeAim=False)
 
     # CREATE GROUP CORESPONDENT THE JOINTS
         au.createParentTransform(listparent=[''], object=noseTipJnt, matchPos=noseTipJnt, prefix='noseTip', suffix='_jnt')
+        au.createParentTransform(listparent=[''], object=chinJnt, matchPos=chinJnt, prefix='chin', suffix='_jnt')
+
         au.connectAttrObject(self.noseTipCtrl, noseTipJnt)
+        au.connectAttrObject(self.chinCtrl, chinJnt)
+
+    # SCALE CONSTRAINT
+        mc.scaleConstraint(self.headCtrl, noseJnt)
+
 
     # ==================================================================================================================
     #                                CONTROLLER CORRESPONDING TO FOLLICLE
@@ -209,6 +197,9 @@ class Build:
             follicleTransform = au.createFollicleSel(objSel=i, objMesh=objectFolMesh, connectFol=['transConn', 'rotateConn'])[0]
             mc.parent(i, follicleTransform)
             self.follicleTransformAll.append(follicleTransform)
+
+        mc.scaleConstraint(self.headCtrl, self.follicleTransformAll[0])
+        mc.scaleConstraint(self.jawCtrl, self.follicleTransformAll[1])
 
 
     # ==================================================================================================================
@@ -235,7 +226,7 @@ class Build:
                         objectParentGrp=self.eyeballAimMainCtrlGrp,
                         objectParentGlobal=self.eyeballAimMainCtrlGlobal,
                         objectParentLocal=self.eyeballAimMainCtrlLocal,
-                        localBase=headUpJnt, worldBase=ctrlGrp, eyeAim=True)
+                        localBase=self.headUpCtrl, worldBase=ctrlGrp, eyeAim=True)
 
     # PARENT TONGUE HIERARCHY
         mc.parent(self.tongue04CtrlGrp, self.tongue03Ctrl )
@@ -246,9 +237,11 @@ class Build:
 
     # PARENTING GRP
         mc.parent(self.jawCtrlGrp, self.headLowCtrl)
+        mc.parent(self.eyeballAimMainCtrlGrp, self.headUpCtrl)
         mc.parent(self.headLowCtrlGrp, self.headUpCtrlGrp, self.headCtrl)
+        mc.parent(self.headCtrlGrp, self.neckCtrl)
 
-        # mc.parent(self.headCtrlGrp, self.neckCtrl)
+
 
     def localWorld(self,objectName, objectCtrl, objectParentGrp,
                    objectParentGlobal, objectParentLocal, localBase, worldBase, eyeAim=False):

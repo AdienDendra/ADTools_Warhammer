@@ -15,6 +15,7 @@ class MainFace:
                  headUpJnt,
                  headLowJnt,
                  jawJnt,
+                 noseJnt,
                  upperTeethJnt,
                  lowerTeethJnt,
                  tongue01Jnt,
@@ -63,6 +64,7 @@ class MainFace:
                         objectFolMesh=objectFolMesh,
                         neckJnt=neckJnt,
                          headJnt=headJnt,
+                        noseJnt=noseJnt,
                          headUpJnt=headUpJnt,
                          headLowJnt=headLowJnt,
                          jawJnt=jawJnt,
@@ -85,38 +87,44 @@ class MainFace:
         secLFT = sc.Build(objectFolMesh=objectFolMesh,
                           nostrilJnt=nostrilLFTJnt,
                           earJnt=earLFTJnt,
-                                cheekUpJnt=cheekUpLFTJnt,
-                                cheekDownJnt=cheekDownLFTJnt,
-                                eyebrowInJnt=eyebrowInLFTJnt,
-                                eyebrowMidJnt=eyebrowMidLFTJnt,
-                                eyebrowOutJnt=eyebrowOutLFTJnt,
-                                browInJnt=browInLFTJnt,
-                                browMidJnt=browMidLFTJnt,
-                                browOutJnt=browOutLFTJnt,
-                                eyelidPinchJnt=eyelidPinchLFTJnt,
-                                scale=scale,
-                                side=sideLFT)
+                          headCtrl=main.headCtrl,
+                          headUpCtrl=main.headUpCtrl,
+                          headLowCtrl=main.headLowCtrl,
+                        cheekUpJnt=cheekUpLFTJnt,
+                        cheekDownJnt=cheekDownLFTJnt,
+                        eyebrowInJnt=eyebrowInLFTJnt,
+                        eyebrowMidJnt=eyebrowMidLFTJnt,
+                        eyebrowOutJnt=eyebrowOutLFTJnt,
+                        browInJnt=browInLFTJnt,
+                        browMidJnt=browMidLFTJnt,
+                        browOutJnt=browOutLFTJnt,
+                        eyelidPinchJnt=eyelidPinchLFTJnt,
+                        scale=scale,
+                        side=sideLFT)
 
         secRGT = sc.Build(objectFolMesh=objectFolMesh,
                           nostrilJnt=nostrilRGTJnt,
                           earJnt=earRGTJnt,
                           cheekUpJnt=cheekUpRGTJnt,
-                                cheekDownJnt=cheekDownRGTJnt,
-                                eyebrowInJnt=eyebrowInRGTJnt,
-                                eyebrowMidJnt=eyebrowMidRGTJnt,
-                                eyebrowOutJnt=eyebrowOutRGTJnt,
-                                browInJnt=browInRGTJnt,
-                                browMidJnt=browMidRGTJnt,
-                                browOutJnt=browOutRGTJnt,
-                                eyelidPinchJnt=eyelidPinchRGTJnt,
-                                scale=scale,
-                                side=sideRGT)
+                          headCtrl=main.headCtrl,
+                          headUpCtrl=main.headUpCtrl,
+                          headLowCtrl=main.headLowCtrl,
+                        cheekDownJnt=cheekDownRGTJnt,
+                        eyebrowInJnt=eyebrowInRGTJnt,
+                        eyebrowMidJnt=eyebrowMidRGTJnt,
+                        eyebrowOutJnt=eyebrowOutRGTJnt,
+                        browInJnt=browInRGTJnt,
+                        browMidJnt=browMidRGTJnt,
+                        browOutJnt=browOutRGTJnt,
+                        eyelidPinchJnt=eyelidPinchRGTJnt,
+                        scale=scale,
+                        side=sideRGT)
 
         self.headUpCtrlGrpParent = main.headUpCtrlGrp
 
-        # constraint
-        mc.parentConstraint(headLowJnt, jawJnt, secLFT.cheekDownJntGrp, mo=1)
-        mc.parentConstraint(headLowJnt, jawJnt, secRGT.cheekDownJntGrp, mo=1)
+        # CONSTRAINT CHEEK DOWN JNT
+        mc.parentConstraint(main.headLowCtrl, main.jawCtrl, secLFT.cheekDownJntGrp, mo=1)
+        mc.parentConstraint(main.headLowCtrl, main.jawCtrl, secRGT.cheekDownJntGrp, mo=1)
 
         mc.parent(secLFT.eyebrowCtrlGrp, secRGT.eyebrowCtrlGrp, main.headUpCtrl)
         mc.parent(secLFT.earCtrlGrp, secRGT.earCtrlGrp, main.headCtrl)
@@ -127,25 +135,3 @@ class MainFace:
         self.eyeballAimMainCtrlGrp = main.eyeballAimMainCtrlGrp
         self.eyeballAimMainCtrl = main.eyeballAimMainCtrl
         self.headCtrlGrp = main.headCtrlGrp
-
-        # # coonect nose ctrl to ctrl nostril offset grp LFT
-        # au.connectAttrObject(main.noseCtrl, secLFT.nostrilCtrlOffset)
-        #
-        # # coonect nose ctrl to ctrl nostril offset grp RGT
-        # transMdn = mc.createNode('multiplyDivide', n='noseTrans_mdn')
-        # mc.connectAttr(main.noseCtrl+'.translate', transMdn+'.input1')
-        # mc.setAttr(transMdn+'.input2Z', -1)
-        #
-        # rotMdn = mc.createNode('multiplyDivide', n='noseRot_mdn')
-        # mc.connectAttr(main.noseCtrl+'.rotate', rotMdn+'.input1')
-        # mc.setAttr(rotMdn+'.input2Z', -1)
-
-        # mc.connectAttr(transMdn+'.output', secRGT.nostrilCtrlOffset+'.translate')
-        # mc.connectAttr(rotMdn+'.output', secRGT.nostrilCtrlOffset+'.rotate')
-
-        # PARENTING GRP
-        # mc.parent(main.noseCtrlGrp, secLFT.cheekUpCtrlGrp, secRGT.cheekUpCtrlGrp, secLFT.browInCtrlGrp, secRGT.browInCtrlGrp,
-        #           secLFT.browMidCtrlGrp, secRGT.browMidCtrlGrp, secLFT.browOutCtrlGrp, secRGT.browOutCtrlGrp,
-        #           secLFT.eyelidPinchCtrlGrp, secRGT.eyelidPinchCtrlGrp, secLFT.eyebrowCtrlGrp, secRGT.eyebrowCtrlGrp,
-        #           secLFT.nostrilCtrlGrp, secRGT.nostrilCtrlGrp, secLFT.cheekDownCtrlGrp, secRGT.cheekDownCtrlGrp,
-        #           ctrlFaceGroup)
