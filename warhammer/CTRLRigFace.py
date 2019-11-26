@@ -34,7 +34,7 @@ def buildRig(scale=1.0,
                                       suffix='jnt'
                                       )
 
-    ctrlGrp = mc.group(em=1, n='ctrl_grp')
+    ctrlGrp = mc.group(em=1, n='worldSpace_grp')
     utilsGrp = mc.group(em=1, n='utils_grp')
 
     mainFace = ms.MainFace(ctrlGrp=ctrlGrp,
@@ -130,6 +130,7 @@ def buildRig(scale=1.0,
                  lipDownRGTJnt02=sj.lipDown02RGT,
                  lipCornerRGTJnt=sj.lipCornerRGT,
                  scale=scale,
+                 headLowCtrl=mainFace.headLowCtrl,
                  directionLipCorner=directionLipCorner,
                  directionLip01=directionLip01,
                  directionLip02=directionLip02,
@@ -138,6 +139,6 @@ def buildRig(scale=1.0,
                  )
 
     # PARENT TO THE GROUP
-    mc.parent(mainFace.neckCtrlGrp, mainFace.ctrlFaceGroup, lip.lipGroup, ctrlGrp)
+    # mc.parent(mainFace.neckCtrlGrp, mainFace.ctrlFaceGroup, lip.lipGroup, ctrlGrp)
 
     mc.parent('mainJnt_grp', 'faceCrv_grp', eyelidLFT.blink, eyelidRGT.blink, utilsGrp)

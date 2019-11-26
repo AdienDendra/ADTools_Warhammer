@@ -22,6 +22,7 @@ class Lip:
                  lipDownRGTJnt02,
                  lipCornerRGTJnt,
                  scale,
+                 headLowCtrl,
                  directionLipCorner,
                  directionLip01,
                  directionLip02,
@@ -37,6 +38,7 @@ class Lip:
                           lipDownJnt02=lipDownLFTJnt02,
                           lipCornerJnt=lipCornerLFTJnt,
                           scale=scale,
+                          headLowCtrl=headLowCtrl,
                           directionLipCorner=directionLipCorner,
                           directionLip01=directionLip01,
                           directionLip02=directionLip02,
@@ -49,6 +51,7 @@ class Lip:
                           lipDownJnt02=lipDownRGTJnt02,
                           lipCornerJnt=lipCornerRGTJnt,
                           scale=scale,
+                          headLowCtrl=headLowCtrl,
                           directionLipCorner=directionLipCorner,
                           directionLip01=directionLip01,
                           directionLip02=directionLip02,
@@ -86,6 +89,7 @@ class Lip:
         for i in object:
             follicleTransform = au.createFollicleSel(objSel=i, objMesh=objectFolMesh, connectFol=['transConn', 'rotateConn'])[0]
             mc.parent(i, follicleTransform)
+            mc.scaleConstraint(headLowCtrl, follicleTransform)
             follTransMid.append(follicleTransform)
 
         mc.parent(follTransMid, lipLFT.follicleTransformAll, lipRGT.follicleTransformAll, lipGroup)

@@ -15,6 +15,7 @@ class Build:
                  directionLipCorner,
                  directionLip01,
                  directionLip02,
+                 headLowCtrl,
                  scale,
                  side):
 
@@ -86,7 +87,10 @@ class Build:
         for i in object:
             follicleTransform = au.createFollicleSel(objSel=i, objMesh=objectFolMesh, connectFol=['transConn', 'rotateConn'])[0]
             mc.parent(i, follicleTransform)
+            mc.scaleConstraint(headLowCtrl, follicleTransform)
+
             self.follicleTransformAll.append(follicleTransform)
+
 
     def flippingCtrl(self, object, downlip, side, jointTgt):
         transMult = mc.createNode('multiplyDivide', n=au.prefixName(object.control) + 'Trans' + side + '_mdn')

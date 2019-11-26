@@ -123,6 +123,7 @@ class MainFace:
                         side=sideRGT)
 
         self.headUpCtrlGrpParent = main.headUpCtrlGrp
+        self.headLowCtrl = main.headLowCtrl
 
         # CONSTRAINT CHEEK DOWN JNT
         mc.parentConstraint(main.headLowCtrl, main.jawCtrl, secLFT.cheekDownJntGrp, mo=1)
