@@ -97,7 +97,7 @@ def buildRig(scale=1.0,
                           directionLid02=directionLid02,
                           positionEyeAimCtrl=positionEyeAimCtrl,
                           eyeballAimMainCtrl=mainFace.eyeballAimMainCtrl,
-                          headUpCtrl=mainFace.headUpCtrlGrpParent
+                          headUpCtrl= mainFace.headUpCtrl
                           )
 
 
@@ -113,7 +113,7 @@ def buildRig(scale=1.0,
                           directionLid02=directionLid02,
                           positionEyeAimCtrl=positionEyeAimCtrl,
                           eyeballAimMainCtrl=mainFace.eyeballAimMainCtrl,
-                          headUpCtrl = mainFace.headUpCtrlGrpParent
+                          headUpCtrl = mainFace.headUpCtrl
                           )
 
     lip = lm.Lip(objectFolMesh=objectFolMesh,
