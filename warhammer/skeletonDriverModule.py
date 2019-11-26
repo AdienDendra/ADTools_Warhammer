@@ -32,6 +32,7 @@ class listFaceSkeletonDuplicate:
         self.headLow01     = sj['%s%s%s_%s' % ('headLow01', oriPrefix, keyPrefix, suffix)]
         self.jaw01     = sj['%s%s%s_%s' % ('jaw01', oriPrefix, keyPrefix, suffix)]
         self.chin     = sj['%s%s%s_%s' % ('chin', oriPrefix, keyPrefix, suffix)]
+        self.throat     = sj['%s%s%s_%s' % ('throat', oriPrefix, keyPrefix, suffix)]
 
 
         # EYELIDS LFT

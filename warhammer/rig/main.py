@@ -21,6 +21,7 @@ class Build:
                  objectFolMesh,
                  noseTipJnt,
                  chinJnt,
+                 throatJnt,
                  scale,
                  eyeballJntLFT,
                  eyeballJntRGT,
@@ -75,6 +76,12 @@ class Build:
 
         chinCtrl = ac.Control(matchPos=chinJnt,
                                    prefix=chinJnt,
+                                   shape=ac.JOINT, groupsCtrl=[''],
+                                   ctrlSize=scale * 1.0,
+                                   ctrlColor='yellow', lockChannels=['v'])
+
+        throatCtrl = ac.Control(matchPos=throatJnt,
+                                   prefix=throatJnt,
                                    shape=ac.JOINT, groupsCtrl=[''],
                                    ctrlSize=scale * 1.0,
                                    ctrlColor='yellow', lockChannels=['v'])
@@ -149,6 +156,9 @@ class Build:
         self.chinCtrl = chinCtrl.control
         self.chinCtrlGrp = chinCtrl.parentControl[0]
 
+        self.throatCtrl = throatCtrl.control
+        self.throatCtrlGrp = throatCtrl.parentControl[0]
+
         self.upperTeethCtrl = upperTeeth.control
         self.upperTeethCtrlGrp = upperTeeth.parentControl[0]
 
@@ -177,9 +187,12 @@ class Build:
     # CREATE GROUP CORESPONDENT THE JOINTS
         au.createParentTransform(listparent=[''], object=noseTipJnt, matchPos=noseTipJnt, prefix='noseTip', suffix='_jnt')
         au.createParentTransform(listparent=[''], object=chinJnt, matchPos=chinJnt, prefix='chin', suffix='_jnt')
+        au.createParentTransform(listparent=[''], object=throatJnt, matchPos=throatJnt, prefix='throat', suffix='_jnt')
 
         au.connectAttrObject(self.noseTipCtrl, noseTipJnt)
         au.connectAttrObject(self.chinCtrl, chinJnt)
+        au.connectAttrObject(self.throatCtrl, throatJnt)
+
 
     # SCALE CONSTRAINT
         mc.scaleConstraint(self.headCtrl, noseJnt)
@@ -190,7 +203,7 @@ class Build:
     # ==================================================================================================================
 
         # group to follicle
-        object = [self.noseTipCtrlGrp, self.chinCtrlGrp]
+        object = [self.noseTipCtrlGrp, self.chinCtrlGrp, self.throatCtrlGrp]
 
         self.follicleTransformAll=[]
         for i in object:
@@ -200,6 +213,7 @@ class Build:
 
         mc.scaleConstraint(self.headCtrl, self.follicleTransformAll[0])
         mc.scaleConstraint(self.jawCtrl, self.follicleTransformAll[1])
+        mc.scaleConstraint(self.jawCtrl, self.follicleTransformAll[2])
 
 
     # ==================================================================================================================

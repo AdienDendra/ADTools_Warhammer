@@ -226,6 +226,8 @@ class Build:
             self.reverseNode(self.eyelidPinchCtrl, eyelidPinchJnt)
             self.reverseNode(self.earCtrl, earJnt)
             self.reverseNode(self.eyebrowCtrl, eyebrowInOffset[1])
+            self.reverseNode(self.eyebrowCtrl, eyebrowMidOffset[1])
+            self.reverseNode(self.eyebrowCtrl, eyebrowOutOffset[1])
 
 
 
