@@ -15,11 +15,10 @@ if not quatNode:
     mc.loadPlugin( 'quatNodes.mll' )
 
 class Build:
-    def __init__(self, crv, eyeballJnt,
-                 worldUpObject,
-                 scale, side, directionLip01,
-                 directionLip02, ctrlColor,
-                 controllerLidDown):
+    def __init__(self, crv, eyeballJnt, worldUpObject,
+                 scale, side,
+                 directionLip01, directionLip02,
+                 ctrlColor, controllerLidDown):
 
         self.pos = mc.xform(eyeballJnt, q=1, ws=1, t=1)[0]
 
@@ -28,8 +27,8 @@ class Build:
 
         self.createJointLip(crv=crv, worldUpObject=worldUpObject, scale=scale, eyeballJnt=eyeballJnt)
 
-        self.wireBindCurve(crv=crv, scale=scale, side=side, directionLip01=directionLip01,
-                           directionLip02=directionLip02 )
+        self.wireBindCurve(crv=crv, scale=scale, side=side, directionLip01=directionLip01, eyeballJnt=eyeballJnt,
+                           directionLip02=directionLip02)
 
 
         self.controllerLid(scale=scale, side=side,
@@ -82,9 +81,9 @@ class Build:
         mc.parent(self.controllerBind03.parentControl[0], self.controllerBind01.parentControl[0], self.controllerBind02.parentControl[0],
                   self.controllerBind05.parentControl[0], self.controllerBind04.parentControl[0], self.grpDrvCtrl)
 
-        # connect group parent bind joint 01 and 02 to the controller grp parent 01 and 02
-        au.connectAttrTransRot(self.jointBind02Grp[0], self.controllerBind02.parentControl[0])
-        au.connectAttrTransRot(self.jointBind04Grp[0], self.controllerBind04.parentControl[0])
+        # # connect group parent bind joint 01 and 02 to the controller grp parent 01 and 02
+        # au.connectAttrTransRot(self.jointBind02Grp[0], self.controllerBind02.parentControl[0])
+        # au.connectAttrTransRot(self.jointBind04Grp[0], self.controllerBind04.parentControl[0])
 
         # flipping controller
         if controllerLidDown:
@@ -240,7 +239,7 @@ class Build:
         mc.connectAttr(mdnReverse+'.output', jointBindTarget+'.translate')
 
     def wireBindCurve(self, crv, directionLip01, directionLip02,
-                      scale, side):
+                      scale, eyeballJnt, side):
 
         jointPosBind = len(self.allJoint)
 
@@ -296,9 +295,6 @@ class Build:
                                                        matchPos=jnt03, prefix=self.prefixNameCrv+ '03',
                                                        suffix='_bind', side=side)
 
-        self.jointBind03GrpAll = self.jointBind03Grp[2]
-        self.jointBind03GrpOffset = self.jointBind03Grp[1]
-
         self.jointBind01Grp = au.createParentTransform(listparent=['Zro', 'Offset'], object=jnt01,
                                                        matchPos=jnt01, prefix=self.prefixNameCrv + '01',
                                                        suffix='_bind', side=side)
@@ -315,7 +311,20 @@ class Build:
                                                        matchPos=jnt04, prefix=self.prefixNameCrv + '04',
                                                        suffix='_bind', side=side)
 
-        # rotation bind joint follow the mouth shape
+        # assign bind grp jnt
+        self.jointBind03GrpAll = self.jointBind03Grp[2]
+        self.jointBind03GrpOffset = self.jointBind03Grp[1]
+
+        # eyeball grp connect
+        self.eyeballOffsetBind01 = self.eyeballGrpBind(crv=crv, bindZroGrp=self.jointBind01Grp[0],
+                                                       number='01', side=side, eyeballJnt=eyeballJnt)
+
+        self.eyeballOffsetBind03 = self.eyeballGrpBind(crv=crv, bindZroGrp=self.jointBind03Grp[0],
+                                                       number='03', side=side, eyeballJnt=eyeballJnt)
+
+        self.eyeballOffsetBind05 = self.eyeballGrpBind(crv=crv, bindZroGrp=self.jointBind05Grp[0],
+                                                       number='05', side=side, eyeballJnt=eyeballJnt)
+
         if self.pos > 0:
             mc.setAttr(self.jointBind01Grp[0] + '.rotateY', directionLip01 * -1)
             mc.setAttr(self.jointBind02Grp[0] + '.rotateY', directionLip02 * -1)
@@ -383,11 +392,21 @@ class Build:
 
         # create grp bind
         self.bindJntGrp = mc.createNode('transform', n=self.prefixNameCrv + 'JntBind' + '_grp')
-        mc.parent(self.jointBind03Grp[0], self.jointBind01Grp[0], self.jointBind02Grp[0],
-                  self.jointBind05Grp[0], self.jointBind04Grp[0], self.bindJntGrp)
+        mc.parent(self.eyeballOffsetBind03[0], self.eyeballOffsetBind01[0], self.jointBind02Grp[0],
+                  self.eyeballOffsetBind05[0], self.jointBind04Grp[0], self.bindJntGrp)
         mc.hide(self.bindJntGrp)
 
         self.deformCrv = deformCrv
+
+    def eyeballGrpBind(self, crv, number, side, bindZroGrp, eyeballJnt):
+        # bind grp for eyeball
+        eyeballZro = mc.group(em=1, n=au.prefixName(crv)+'EyeballZro' + number + side+'_grp')
+        eyeballOffset = mc.group(em=1, n=au.prefixName(crv)+'EyeballOffset' + number + side +'_grp', p=eyeballZro)
+        mc.delete(mc.parentConstraint(eyeballJnt, eyeballZro))
+
+        mc.parent(bindZroGrp, eyeballOffset)
+
+        return eyeballZro, eyeballOffset
 
     def createJointLip(self, crv, worldUpObject,  eyeballJnt, scale):
         self.allJointCenter =[]

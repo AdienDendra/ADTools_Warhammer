@@ -30,6 +30,14 @@ class Eyelid:
         mc.parentConstraint(headUpJoint, worldUpObject, mo=1)
         self.worldUpObject = worldUpObject
 
+        self.eyeballMoveGrp = mc.group(em=1, n='eyeballMove'+side+'_grp')
+        self.eyeballMoveOffset = mc.group(em=1, n='eyeballMoveOffset'+side+'_grp', p=self.eyeballMoveGrp)
+        mc.delete(mc.parentConstraint(eyeballJnt, self.eyeballMoveGrp))
+
+        self.eyeballMoveAll= mc.group(em=1, n='eyeballMoveAll'+side+'_grp')
+        mc.parent(self.eyeballMoveAll, self.eyeballMoveOffset)
+
+
         # EYELID UP LFT
         self.eyelidUp = el.Build(crv=crvUp,
                                  worldUpObject=worldUpObject,
@@ -67,6 +75,19 @@ class Eyelid:
 
         self.blink = blink
 
+        # connect the eyeball to eyeball up grp bind
+        au.connectAttrObject(self.eyeballController, self.eyelidUp.eyeballOffsetBind01[1])
+        au.connectAttrObject(self.eyeballController, self.eyelidUp.eyeballOffsetBind03[1])
+        au.connectAttrObject(self.eyeballController, self.eyelidUp.eyeballOffsetBind05[1])
+
+        # connect the eyeball to eyeball down grp bind
+        au.connectAttrObject(self.eyeballController, self.eyelidDown.eyeballOffsetBind01[1])
+        au.connectAttrObject(self.eyeballController, self.eyelidDown.eyeballOffsetBind03[1])
+        au.connectAttrObject(self.eyeballController, self.eyelidDown.eyeballOffsetBind05[1])
+
+        # parent contraint eyeball move
+        au.connectAttrTransRot(self.eyeballController, self.eyeballMoveOffset)
+
     # ==================================================================================================================
     #                                                  CORNER CONTROLLER
     # ==================================================================================================================
@@ -98,7 +119,9 @@ class Eyelid:
             self.cornerReverseNode(lidCornerCtrl=lidCornerCtrlIn[0], side=side, lidCornerName='lidCornerIn',
                                    targetUp=self.eyelidUp.jointBind01Grp[1], targetDown=self.eyelidDown.jointBind01Grp[1])
 
-        # PARENT TO GRP
+    # ==================================================================================================================
+    #                                              PARENT TO GROUP
+    # ==================================================================================================================
         mc.parent(self.eyelidUp.controllerBindGrpZro01, lidCornerCtrlIn[0])
         mc.parent(self.eyelidDown.controllerBindGrpZro01, lidCornerCtrlIn[0])
         mc.parent(self.eyelidUp.controllerBindGrpZro05, lidCornerCtrlOut[0])
@@ -107,12 +130,12 @@ class Eyelid:
         mc.parent(self.eyelidUp.grpDrvCtrl, self.eyelidDown.grpDrvCtrl, lidCornerCtrlIn[1],
                   lidCornerCtrlOut[1], self.eyeballCtrl.control)
 
-        mc.parent(self.eyelidUp.bindJntGrp, self.eyelidDown.bindJntGrp,
-                  self.eyelidUp.jointGrp, self.eyelidUp.locatorGrp,
+        mc.parent(self.eyelidUp.jointGrp, self.eyelidUp.locatorGrp,
                   self.eyelidUp.curvesGrp, self.eyelidUp.jointGrp,
                   self.eyelidDown.jointGrp, self.eyelidDown.locatorGrp,
-                  self.eyelidDown.curvesGrp, self.eyelidDown.jointGrp,  blink
-                  )
+                  self.eyelidDown.curvesGrp, self.eyelidDown.jointGrp, self.eyeballMoveAll)
+
+        mc.parent(self.eyelidUp.bindJntGrp, self.eyelidDown.bindJntGrp, blink)
 
         mc.parent(self.eyeballCtrl.parentControl[0], headUpCtrl)
 
@@ -170,6 +193,7 @@ class Eyelid:
                                       ctrlSize=scale * 2,
                                       ctrlColor='blue', lockChannels=['v', 's'], side=side, connect=['connectMatrixAll'])
 
+        self.eyeballController = self.eyeballCtrl.control
 
         # ADD ATTRIBUTE
         au.addAttribute(objects=[self.eyeballCtrl.control], longName=['eyelidDegree'], niceName=[' '], at="enum",

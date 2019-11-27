@@ -141,4 +141,5 @@ def buildRig(scale=1.0,
     # PARENT TO THE GROUP
     # mc.parent(mainFace.neckCtrlGrp, mainFace.ctrlFaceGroup, lip.lipGroup, ctrlGrp)
 
-    mc.parent('mainJnt_grp', 'faceCrv_grp', eyelidLFT.blink, eyelidRGT.blink, ctrlGrp, utilsGrp)
+    mc.parent('mainJnt_grp', 'faceCrv_grp', eyelidLFT.blink, eyelidRGT.blink,
+              eyelidLFT.eyeballMoveGrp, eyelidRGT.eyeballMoveGrp, ctrlGrp, utilsGrp)
