@@ -20,15 +20,22 @@ class Eyelid:
                  directionLid02,
                  positionEyeAimCtrl,
                  eyeballAimMainCtrl,
-                 headUpCtrl
+                 headUpCtrlf
                  ):
 
+        # world up object eyelid
         worldUpObject = mc.spaceLocator(n='eyeballWorldObj'+side+'_loc')[0]
         mc.delete(mc.parentConstraint(eyeballJnt, worldUpObject))
         value = mc.getAttr(worldUpObject + '.translateY')
         mc.setAttr(worldUpObject + '.translateY', value + (10 * scale))
-        mc.parentConstraint(headUpJoint, worldUpObject, mo=1)
+        # mc.parentConstraint(headUpJoint, worldUpObject, mo=1)
         self.worldUpObject = worldUpObject
+
+        # world up object eyeball aim
+        worldUpAimObject = mc.duplicate(worldUpObject, n='eyeballWorldAimObj'+side+'_loc')[0]
+        mc.parent(worldUpAimObject, headUpCtrl)
+        mc.hide(worldUpAimObject)
+        self.worldUpAimObject = worldUpAimObject
 
         self.eyeballMoveGrp = mc.group(em=1, n='eyeballMove'+side+'_grp')
         self.eyeballMoveOffset = mc.group(em=1, n='eyeballMoveOffset'+side+'_grp', p=self.eyeballMoveGrp)
@@ -64,7 +71,7 @@ class Eyelid:
                                 prefixEyeballAim=prefixEyeballAim, crvUp=crvUp,
                                 crvDown=crvDown, scale=scale, side=side, eyelidUp=self.eyelidUp,
                                 eyelidDown=self.eyelidDown, positionEyeAimCtrl=positionEyeAimCtrl,
-                                worldUpObject=worldUpObject,
+                                worldUpAimObject=worldUpAimObject,
                                 eyeballAimMainCtrl=eyeballAimMainCtrl,
                                 controllerBind03OffsetCtrlUp=self.eyelidUp.controllerBind03OffsetCtrl,
                                 controllerBind03OffsetCtrlDown=self.eyelidDown.controllerBind03OffsetCtrl,
@@ -175,7 +182,7 @@ class Eyelid:
         return cornerCtrl.control, cornerCtrl.parentControl[0]
 
     def blinkSetup(self, eyeballJnt, prefixEyeball, prefixEyeballAim, crvUp, crvDown, scale,
-                   side, eyelidUp, eyelidDown, positionEyeAimCtrl, worldUpObject, eyeballAimMainCtrl,
+                   side, eyelidUp, eyelidDown, positionEyeAimCtrl, worldUpAimObject, eyeballAimMainCtrl,
                    controllerBind03OffsetCtrlUp, controllerBind03OffsetCtrlDown, jointBind03GrpAllUp, jointBind03GrpAllDown,
                    jointBind03GrpOffsetDown, jointBind03GrpOffsetUp):
 
@@ -191,7 +198,8 @@ class Eyelid:
                                       prefix=prefixEyeball,
                                       shape=ct.JOINTPLUS, groupsCtrl=['Zro', 'Offset'],
                                       ctrlSize=scale * 2,
-                                      ctrlColor='blue', lockChannels=['v', 's'], side=side, connect=['connectMatrixAll'])
+                                      ctrlColor='blue', lockChannels=['v', 's'], side=side,
+                                      connect=['connectMatrixAll'])
 
         self.eyeballController = self.eyeballCtrl.control
 
@@ -225,7 +233,7 @@ class Eyelid:
         mc.setAttr(self.eyeballAimCtrl.parentControl[0]+'.translateZ', getAttribute+(positionEyeAimCtrl*scale))
 
         mc.aimConstraint(self.eyeballAimCtrl.control, eyballGrp[1], mo=1, weight=1, aimVector=(0, 0, 1), upVector=(0, 1, 0),
-                         worldUpType="object", worldUpObject=worldUpObject)
+                         worldUpType="object", worldUpObject=worldUpAimObject)
 
         # PARENT EYE AIM TO EYEBALL AIM MAIN CTRL
         mc.parent(self.eyeballAimCtrl.parentControl[0], eyeballAimMainCtrl)

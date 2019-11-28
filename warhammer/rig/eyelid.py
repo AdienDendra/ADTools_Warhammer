@@ -25,7 +25,7 @@ class Build:
         self.prefixNameCrv = au.prefixName(crv)
         self.vtxCrv = mc.ls('%s.cv[0:*]' % crv, fl=True)
 
-        self.createJointLip(crv=crv, worldUpObject=worldUpObject, scale=scale, eyeballJnt=eyeballJnt)
+        self.createJointLid(crv=crv, worldUpObject=worldUpObject, scale=scale, eyeballJnt=eyeballJnt)
 
         self.wireBindCurve(crv=crv, scale=scale, side=side, directionLip01=directionLip01, eyeballJnt=eyeballJnt,
                            directionLip02=directionLip02)
@@ -408,7 +408,7 @@ class Build:
 
         return eyeballZro, eyeballOffset
 
-    def createJointLip(self, crv, worldUpObject,  eyeballJnt, scale):
+    def createJointLid(self, crv, worldUpObject, eyeballJnt, scale):
         self.allJointCenter =[]
         self.allJoint =[]
         self.allLocator=[]

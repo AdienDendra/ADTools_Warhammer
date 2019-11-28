@@ -60,21 +60,35 @@ class Lip:
         self.lipMidUp= ct.Control(matchPos=lipMidUpJnt, prefix=au.prefixName(lipMidUpJnt),
                                            shape=ct.JOINT, groupsCtrl=['','Offset'], ctrlSize=scale * 0.4,
                                            ctrlColor='red', lockChannels=['v',])
-        self.lipMidUpParentCtrl = self.lipMidUp.parentControl[0]
 
         self.lipMidDown= ct.Control(matchPos=lipMidDownJnt, prefix=au.prefixName(lipMidDownJnt),
                                            shape=ct.JOINT, groupsCtrl=['','Offset'], ctrlSize=scale * 0.4,
                                            ctrlColor='red', lockChannels=['v'])
+
+        self.lipMidUpParentCtrl = self.lipMidUp.parentControl[0]
         self.lipMidDownParentCtrl = self.lipMidDown.parentControl[0]
 
         au.createParentTransform(listparent=[''], object=lipMidUpJnt, matchPos=lipMidUpJnt, prefix='lipMidUp', suffix='_jnt')
         au.createParentTransform(listparent=[''], object=lipMidDownJnt, matchPos=lipMidDownJnt, prefix='lipMidDown', suffix='_jnt')
 
-
-        mc.setAttr(self.lipMidDown.parentControl[0] + '.scaleY', -1)
-
+        # lip mid up setup
         au.connectAttrObject(self.lipMidUp.control, lipMidUpJnt)
-        au.connectAttrObject(self.lipMidDown.control, lipMidDownJnt)
+
+        # lip mid down setup
+        mc.setAttr(self.lipMidDown.parentControl[0] + '.scaleY', -1)
+        transMult = mc.createNode('multiplyDivide', n=au.prefixName(self.lipMidDown.control) + 'Trans'  + '_mdn')
+        rotMult = mc.createNode('multiplyDivide', n=au.prefixName(self.lipMidDown.control) + 'Rot' + '_mdn')
+        mc.setAttr(transMult + '.input2Y', -1)
+        mc.setAttr(rotMult + '.input2Z', -1)
+        mc.setAttr(rotMult + '.input2X', -1)
+
+        mc.connectAttr(self.lipMidDown.control + '.translate', transMult + '.input1')
+        mc.connectAttr(self.lipMidDown.control + '.rotate', rotMult + '.input1')
+
+        mc.connectAttr(transMult + '.output', lipMidDownJnt + '.translate')
+        mc.connectAttr(rotMult + '.output', lipMidDownJnt + '.rotate')
+
+        # au.connectAttrObject(self.lipMidDown.control, lipMidDownJnt)
 
         # constraint lip mid
 

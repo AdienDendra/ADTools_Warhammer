@@ -100,16 +100,18 @@ class Build:
             mc.setAttr(object.parentControl[0] + '.scaleX', -1)
             mc.setAttr(transMult + '.input2X', -1)
             mc.setAttr(rotMult + '.input2Z', -1)
+            mc.setAttr(rotMult + '.input2Y', -1)
             if downlip:
                 mc.setAttr(object.parentControl[0] + '.scaleY', -1)
                 mc.setAttr(transMult + '.input2Y', -1)
                 mc.setAttr(rotMult + '.input2Z', 1)
-
+                mc.setAttr(rotMult + '.input2X', -1)
         else:
             if downlip:
                 mc.setAttr(object.parentControl[0] + '.scaleY', -1)
                 mc.setAttr(transMult+'.input2Y', -1)
                 mc.setAttr(rotMult+'.input2Z', -1)
+                mc.setAttr(rotMult + '.input2X', -1)
 
         mc.connectAttr(object.control + '.translate', transMult + '.input1')
         mc.connectAttr(object.control + '.rotate', rotMult + '.input1')
