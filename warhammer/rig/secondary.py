@@ -168,14 +168,23 @@ class Build:
         au.createParentTransform(listparent=['', 'Offset'], object=nostrilJnt, matchPos=nostrilJnt, prefix='nostril', suffix='_jnt', side=side)
         au.createParentTransform(listparent=[''], object=cheekUpJnt, matchPos=cheekUpJnt, prefix='cheekUp', suffix='_jnt', side=side)
         self.cheekDownJntGrp = au.createParentTransform(listparent=[''], object=cheekDownJnt, matchPos=cheekDownJnt, prefix='cheekDown', suffix='_jnt', side=side)
-        eyebrowInOffset = au.createParentTransform(listparent=['','Offset'], object=eyebrowInJnt, matchPos=eyebrowInJnt, prefix='eyebrowIn', suffix='_jnt', side=side)
-        eyebrowMidOffset = au.createParentTransform(listparent=['','Offset'], object=eyebrowMidJnt, matchPos=eyebrowMidJnt, prefix='eyebrowMid', suffix='_jnt', side=side)
-        eyebrowOutOffset = au.createParentTransform(listparent=['','Offset'], object=eyebrowOutJnt, matchPos=eyebrowOutJnt, prefix='eyebrowOut', suffix='_jnt', side=side)
+        eyebrowInGrp = au.createParentTransform(listparent=['', 'Offset'], object=eyebrowInJnt, matchPos=eyebrowInJnt, prefix='eyebrowIn', suffix='_jnt', side=side)
+        eyebrowMidGrp = au.createParentTransform(listparent=['', 'Offset'], object=eyebrowMidJnt, matchPos=eyebrowMidJnt, prefix='eyebrowMid', suffix='_jnt', side=side)
+        eyebrowOutGrp = au.createParentTransform(listparent=['', 'Offset'], object=eyebrowOutJnt, matchPos=eyebrowOutJnt, prefix='eyebrowOut', suffix='_jnt', side=side)
         au.createParentTransform(listparent=[''], object=browInJnt, matchPos=browInJnt, prefix='browIn', suffix='_jnt', side=side)
         au.createParentTransform(listparent=[''], object=browMidJnt, matchPos=browMidJnt, prefix='browMid', suffix='_jnt', side=side)
         au.createParentTransform(listparent=[''], object=browOutJnt, matchPos=browOutJnt, prefix='browOut', suffix='_jnt', side=side)
         au.createParentTransform(listparent=[''], object=eyelidPinchJnt, matchPos=eyelidPinchJnt, prefix='eyelidPinch', suffix='_jnt', side=side)
 
+    # EYBROW MAIN OFFSET GRP JOINT TRANSFORM
+        eyebrowInMain = self.mainGroupBindConnection(name='eyebrowIn', side=side, objectParent=eyebrowInGrp[0])
+        eyebrowMidMain = self.mainGroupBindConnection(name='eyebrowMid', side=side, objectParent=eyebrowMidGrp[0])
+        eyebrowOutMain = self.mainGroupBindConnection(name='eyebrowOut', side=side, objectParent=eyebrowOutGrp[0])
+
+    # SHIFTING PARENT JOINT TO MAIN OFFSET GRP EYEBROW
+        mc.parent(eyebrowInGrp[1], eyebrowInMain)
+        mc.parent(eyebrowMidGrp[1], eyebrowMidMain)
+        mc.parent(eyebrowOutGrp[1], eyebrowOutMain)
 
     # CONTROLLER ACCORDING THE FOLLICLE
         object = [self.nostrilCtrlGrp, self.cheekDownCtrlGrp, self.cheekUpCtrlGrp,  self.eyebrowInCtrlGrp, self.eyebrowMidCtrlGrp,
@@ -212,8 +221,6 @@ class Build:
             mc.setAttr(self.earCtrlGrp+ '.scaleX', -1)
             mc.setAttr(self.eyebrowCtrlGrp+ '.scaleX', -1)
 
-
-
             self.reverseNode(self.nostrilCtrl, nostrilJnt)
             self.reverseNode(self.cheekUpCtrl, cheekUpJnt)
             self.reverseNode(self.cheekDownCtrl, cheekDownJnt)
@@ -224,12 +231,9 @@ class Build:
             self.reverseNode(self.browMidCtrl, browMidJnt)
             self.reverseNode(self.browOutCtrl, browOutJnt)
             self.reverseNode(self.eyelidPinchCtrl, eyelidPinchJnt)
-            self.reverseNode(self.earCtrl, earJnt)
-            self.reverseNode(self.eyebrowCtrl, eyebrowInOffset[1])
-            self.reverseNode(self.eyebrowCtrl, eyebrowMidOffset[1])
-            self.reverseNode(self.eyebrowCtrl, eyebrowOutOffset[1])
-
-
+            self.reverseNode(self.eyebrowCtrl, eyebrowInMain)
+            self.reverseNode(self.eyebrowCtrl, eyebrowMidMain)
+            self.reverseNode(self.eyebrowCtrl, eyebrowOutMain)
 
             au.connectAttrScale(self.nostrilCtrl, nostrilJnt)
             au.connectAttrScale(self.cheekUpCtrl, cheekUpJnt)
@@ -241,10 +245,9 @@ class Build:
             au.connectAttrScale(self.browMidCtrl, browMidJnt)
             au.connectAttrScale(self.browOutCtrl, browOutJnt)
             au.connectAttrScale(self.eyelidPinchCtrl, eyelidPinchJnt)
-            au.connectAttrScale(self.eyebrowCtrl, eyebrowInOffset[1])
-            au.connectAttrScale(self.eyebrowCtrl, eyebrowMidOffset[1])
-            au.connectAttrScale(self.eyebrowCtrl, eyebrowOutOffset[1])
-
+            au.connectAttrScale(self.eyebrowCtrl, eyebrowInMain)
+            au.connectAttrScale(self.eyebrowCtrl, eyebrowMidMain)
+            au.connectAttrScale(self.eyebrowCtrl, eyebrowOutMain)
 
         else:
             au.connectAttrObject(self.nostrilCtrl, nostrilJnt)
@@ -257,9 +260,9 @@ class Build:
             au.connectAttrObject(self.browMidCtrl, browMidJnt)
             au.connectAttrObject(self.browOutCtrl, browOutJnt)
             au.connectAttrObject(self.eyelidPinchCtrl, eyelidPinchJnt)
-            au.connectAttrObject(self.eyebrowCtrl, eyebrowInOffset[1])
-            au.connectAttrObject(self.eyebrowCtrl, eyebrowMidOffset[1])
-            au.connectAttrObject(self.eyebrowCtrl, eyebrowOutOffset[1])
+            au.connectAttrObject(self.eyebrowCtrl, eyebrowInMain)
+            au.connectAttrObject(self.eyebrowCtrl, eyebrowMidMain)
+            au.connectAttrObject(self.eyebrowCtrl, eyebrowOutMain)
 
     # CONSTRAINT EARS
         mc.parentConstraint(self.earCtrl, earJnt, mo=1)
@@ -293,7 +296,16 @@ class Build:
 
         rotMdn = mc.createNode('multiplyDivide', n=au.prefixName(targetJnt)+'Rot' +'_mdn')
         mc.connectAttr(object+'.rotate', rotMdn+'.input1')
+        mc.setAttr(rotMdn+'.input2Y', -1)
         mc.setAttr(rotMdn+'.input2Z', -1)
         mc.connectAttr(rotMdn+'.output', targetJnt+'.rotate')
 
+    def mainGroupBindConnection(self, name, side, objectParent):
+        # EYBROW MAIN OFFSET GRP JOINT TRANSFORM
+        eyebrowMainBindGrp = mc.group(em=1, n=name+'Main' + side + '_grp')
+        eyebrowMainBindOffset = mc.group(em=1, n=name+'MainOffset' + side + '_grp', p=eyebrowMainBindGrp)
+        mc.delete(mc.parentConstraint(self.eyebrowCtrl, eyebrowMainBindGrp))
 
+        mc.parent(eyebrowMainBindGrp, objectParent)
+
+        return eyebrowMainBindOffset
