@@ -16,7 +16,7 @@ if not quatNode:
 
 class Build:
     def __init__(self, crv, eyeballJnt, worldUpObject,
-                 scale, side,
+                 scale, side, offsetEyelidPos,
                  directionLip01, directionLip02,
                  ctrlColor, controllerLidDown):
 
@@ -28,7 +28,7 @@ class Build:
         self.createJointLid(crv=crv, worldUpObject=worldUpObject, scale=scale, eyeballJnt=eyeballJnt)
 
         self.wireBindCurve(crv=crv, scale=scale, side=side, directionLip01=directionLip01, eyeballJnt=eyeballJnt,
-                           directionLip02=directionLip02)
+                           directionLip02=directionLip02, offsetPos=offsetEyelidPos)
 
 
         self.controllerLid(scale=scale, side=side,
@@ -227,7 +227,7 @@ class Build:
             # mid translate and rotate
             au.connectAttrTransRot(self.controllerBind03.control, self.jnt03)
 
-    def bindTranslateReverse(self, control, input2X, input2Y, input2Z, jointBindTarget):
+    def bindTranslateReverse(self, control, input2X, input2Y, input2Z, jointBindTarget, ):
         mdnReverse = mc.createNode('multiplyDivide', n=au.prefixName(control) + '_mdn')
         mc.connectAttr(control + '.translate', mdnReverse + '.input1')
 
@@ -238,7 +238,7 @@ class Build:
         # connect to object
         mc.connectAttr(mdnReverse+'.output', jointBindTarget+'.translate')
 
-    def wireBindCurve(self, crv, directionLip01, directionLip02,
+    def wireBindCurve(self, crv, directionLip01, directionLip02, offsetPos,
                       scale, eyeballJnt, side):
 
         jointPosBind = len(self.allJoint)
@@ -246,7 +246,7 @@ class Build:
         # query position of bind joint
         joint01 =  self.allJoint[(jointPosBind * 0)]
 
-        joint02 =  self.allJoint[(jointPosBind / 4)]
+        joint02 =  self.allJoint[(jointPosBind / 4)+offsetPos]
 
         transform = None
         if not len(self.allJoint) % 2 == 0:
@@ -258,7 +258,7 @@ class Build:
             transform = mc.createNode('transform', n='guide')
             joint03 = mc.delete(mc.parentConstraint(tempJnt03, tempsjoint03, transform))
 
-        joint04 =  self.allJoint[(jointPosBind / 2) + (jointPosBind / 4)]
+        joint04 =  self.allJoint[((jointPosBind / 2) + (jointPosBind / 4))- offsetPos]
         joint05 =  self.allJoint[-1]
 
         # query the position right side
