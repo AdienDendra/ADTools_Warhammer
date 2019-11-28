@@ -20,7 +20,7 @@ class Eyelid:
                  directionLid02,
                  positionEyeAimCtrl,
                  eyeballAimMainCtrl,
-                 headUpCtrlf
+                 headUpCtrl
                  ):
 
         # world up object eyelid
