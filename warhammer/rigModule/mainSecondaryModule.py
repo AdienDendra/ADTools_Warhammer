@@ -132,7 +132,7 @@ class MainFace:
         mc.parentConstraint(main.headLowCtrl, main.jawCtrl, secRGT.cheekDownJntGrp, mo=1)
 
         mc.parent(secLFT.eyebrowCtrlGrp, secRGT.eyebrowCtrlGrp, main.headUpCtrl)
-        mc.parent(secLFT.earCtrlGrp, secRGT.earCtrlGrp, main.headCtrl)
+        mc.parent(secLFT.earCtrlGrp, secRGT.earCtrlGrp, main.headCtrlGimbal)
         mc.parent(secLFT.follicleTransformAll, secRGT.follicleTransformAll, main.follicleTransformAll, ctrlFaceGroup)
 
         self.ctrlFaceGroup = ctrlFaceGroup

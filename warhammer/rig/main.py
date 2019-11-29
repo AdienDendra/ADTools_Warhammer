@@ -35,6 +35,7 @@ class Build:
                                    prefix=neckJnt,
                                    shape=ac.CIRCLEPLUS, groupsCtrl=[''],
                                    ctrlSize=scale * 15.0,
+                                   gimbal=True,
                                    ctrlColor='yellow', lockChannels=['v'],
                                    connect=['parentCons', 'scaleCons'])
 
@@ -42,6 +43,7 @@ class Build:
                                    prefix=headJnt,
                                    shape=ac.CUBE, groupsCtrl=['','Global', "Local"],
                                    ctrlSize=scale * 10.0,
+                                   gimbal=True,
                                    ctrlColor='blue', lockChannels=['v'],
                                    connect=['parentCons', 'scaleCons'])
         # ADD ATTRIBUTE
@@ -133,9 +135,11 @@ class Build:
     #                                            ASSIGNING THE INSTANCE NAME
     # ==================================================================================================================
         self.neckCtrl = neckCtrl.control
+        self.neckCtrlGimbal = neckCtrl.controlGimbal
         self.neckCtrlGrp = neckCtrl.parentControl[0]
 
         self.headCtrl = headCtrl.control
+        self.headCtrlGimbal = headCtrl.controlGimbal
         self.headCtrlGrp = headCtrl.parentControl[0]
         self.headCtrlGlobal = headCtrl.parentControl[1]
         self.headCtrlLocal = headCtrl.parentControl[2]
@@ -182,7 +186,7 @@ class Build:
         self.localWorld(objectName='head', objectCtrl=self.headCtrl,
                         objectParentGrp=self.headCtrlGrp, objectParentGlobal=self.headCtrlGlobal,
                         objectParentLocal=self.headCtrlLocal,
-                        localBase=self.neckCtrl, worldBase=ctrlGrp, eyeAim=False)
+                        localBase=self.neckCtrlGimbal, worldBase=ctrlGrp, eyeAim=False)
 
     # CREATE GROUP CORESPONDENT THE JOINTS
         au.createParentTransform(listparent=[''], object=noseTipJnt, matchPos=noseTipJnt, prefix='noseTip', suffix='_jnt')
@@ -252,8 +256,8 @@ class Build:
     # PARENTING GRP
         mc.parent(self.jawCtrlGrp, self.headLowCtrl)
         mc.parent(self.eyeballAimMainCtrlGrp, self.headUpCtrl)
-        mc.parent(self.headLowCtrlGrp, self.headUpCtrlGrp, self.headCtrl)
-        mc.parent(self.headCtrlGrp, self.neckCtrl)
+        mc.parent(self.headLowCtrlGrp, self.headUpCtrlGrp, self.headCtrlGimbal)
+        mc.parent(self.headCtrlGrp, self.neckCtrlGimbal)
 
 
 
