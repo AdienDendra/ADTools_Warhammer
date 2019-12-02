@@ -1,5 +1,7 @@
 import maya.cmds as mc
 import ADUtils as au, ADCtrl as ct
+import re
+from string import digits
 
 reload(au)
 reload(ct)
@@ -16,7 +18,10 @@ class Build:
                  directionLip01,
                  directionLip02,
                  headLowCtrl,
+                 jawCtrl,
                  scale,
+                 sideRGT,
+                 sideLFT,
                  side):
 
         self.pos = mc.xform(lipCornerJnt, q=1, ws=1, t=1)[0]
@@ -61,7 +66,7 @@ class Build:
                                            ctrlColor='red', lockChannels=['v'], side=side)
         self.downLip02ParentCtrl = self.downLip02.parentControl[0]
 
-        au.createParentTransform(listparent=[''], object=lipCornerJnt, matchPos=lipCornerJnt, prefix='lipCorner', suffix='_jnt', side=side)
+        cornerGrpJnt = au.createParentTransform(listparent=[''], object=lipCornerJnt, matchPos=lipCornerJnt, prefix='lipCorner', suffix='_jnt', side=side)
         au.createParentTransform(listparent=[''], object=lipUpJnt01, matchPos=lipUpJnt01, prefix='lipUp01', suffix='_jnt', side=side)
         au.createParentTransform(listparent=[''], object=lipUpJnt02, matchPos=lipUpJnt02, prefix='lipUp02', suffix='_jnt', side=side)
         au.createParentTransform(listparent=[''], object=lipDownJnt01, matchPos=lipDownJnt01, prefix='lipDown01', suffix='_jnt', side=side)
@@ -69,11 +74,11 @@ class Build:
 
 
         # flipping controller
-        self.flippingCtrl(self.corner,downlip=False, side=side, jointTgt=lipCornerJnt)
-        self.flippingCtrl(self.upLip01,downlip=False, side=side, jointTgt=lipUpJnt01)
-        self.flippingCtrl(self.upLip02,downlip=False, side=side, jointTgt=lipUpJnt02)
-        self.flippingCtrl(self.downLip01,downlip=True, side=side, jointTgt=lipDownJnt01)
-        self.flippingCtrl(self.downLip02,downlip=True, side=side, jointTgt=lipDownJnt02)
+        self.flippingCtrl(sideRGT, sideLFT, self.corner,downlip=False, side=side, jointTgt=lipCornerJnt)
+        self.flippingCtrl(sideRGT, sideLFT, self.upLip01,downlip=False, side=side, jointTgt=lipUpJnt01)
+        self.flippingCtrl(sideRGT, sideLFT, self.upLip02,downlip=False, side=side, jointTgt=lipUpJnt02)
+        self.flippingCtrl(sideRGT, sideLFT, self.downLip01,downlip=True, side=side, jointTgt=lipDownJnt01)
+        self.flippingCtrl(sideRGT, sideLFT, self.downLip02,downlip=True, side=side, jointTgt=lipDownJnt02)
 
         au.connectAttrScale(self.corner.control, lipCornerJnt)
         au.connectAttrScale(self.upLip01.control, lipUpJnt01)
@@ -85,16 +90,35 @@ class Build:
         object = [self.cornerParentCtrl, self.upLip01ParentCtrl, self.upLip02ParentCtrl, self.downLip01ParentCtrl, self.downLip02ParentCtrl]
         self.follicleTransformAll=[]
         for i in object:
-            follicleTransform = au.createFollicleSel(objSel=i, objMesh=objectFolMesh, connectFol=['transConn', 'rotateConn'])[0]
+            follicleTransform = au.createFollicleSel(objSel=i, objMesh=objectFolMesh, connectFol=['transConn'])[0]
             mc.parent(i, follicleTransform)
             mc.scaleConstraint(headLowCtrl, follicleTransform)
 
             self.follicleTransformAll.append(follicleTransform)
 
+        # CONSTRAINT CORNER JNT GRP
+        mc.parentConstraint(headLowCtrl, jawCtrl, cornerGrpJnt, mo=1)
 
-    def flippingCtrl(self, object, downlip, side, jointTgt):
-        transMult = mc.createNode('multiplyDivide', n=au.prefixName(object.control) + 'Trans' + side + '_mdn')
-        rotMult = mc.createNode('multiplyDivide', n=au.prefixName(object.control) + 'Rot' + side + '_mdn')
+    def flippingCtrl(self, sideRGT, sideLFT, object, downlip, side, jointTgt):
+        if sideRGT in object.control:
+            newName = object.control.replace(sideRGT, '')
+        elif sideLFT in object.control:
+            newName = object.control.replace(sideLFT, '')
+        else:
+            newName = object.control
+            # get the number
+        try:
+            patterns = [r'\d+']
+            prefixNumber = au.prefixName(newName)
+            for p in patterns:
+                prefixNumber = re.findall(p, prefixNumber)[0]
+        except:
+            prefixNumber = ''
+        # get the prefix without number
+        prefixNoNumber = str(au.prefixName(newName)).translate(None, digits)
+
+        transMult = mc.createNode('multiplyDivide', n=prefixNoNumber + 'Trans' + prefixNumber + side + '_mdn')
+        rotMult = mc.createNode('multiplyDivide', n=prefixNoNumber + 'Rot' + prefixNumber + side + '_mdn')
 
         if mc.xform(object.parentControl[0], q=1, ws=1, t=1)[0] < 0:
             mc.setAttr(object.parentControl[0] + '.scaleX', -1)

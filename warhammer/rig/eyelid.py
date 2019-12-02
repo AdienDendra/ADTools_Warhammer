@@ -1,5 +1,7 @@
 import maya.cmds as mc, maya.OpenMaya as om
 import ADCtrl as ct, ADUtils as au
+import re
+from string import digits
 
 reload (ct)
 reload (au)
@@ -16,28 +18,37 @@ if not quatNode:
 
 class Build:
     def __init__(self, crv, eyeballJnt, worldUpObject,
-                 scale, side, offsetEyelidPos,
+                 scale, sideLFT, sideRGT,side, offsetEyelidPos,
                  directionLip01, directionLip02,
                  ctrlColor, controllerLidDown):
 
         self.pos = mc.xform(eyeballJnt, q=1, ws=1, t=1)[0]
 
-        self.prefixNameCrv = au.prefixName(crv)
+        # self.prefixNameCrv = au.prefixName(crv)
         self.vtxCrv = mc.ls('%s.cv[0:*]' % crv, fl=True)
 
-        self.createJointLid(crv=crv, worldUpObject=worldUpObject, scale=scale, eyeballJnt=eyeballJnt)
+        self.createJointLid(crv=crv, worldUpObject=worldUpObject, scale=scale, eyeballJnt=eyeballJnt,
+                            sideLFT=sideLFT, sideRGT=sideRGT, side=side)
 
-        self.wireBindCurve(crv=crv, scale=scale, side=side, directionLip01=directionLip01, eyeballJnt=eyeballJnt,
+        self.wireBindCurve( sideLFT=sideLFT, sideRGT=sideRGT, crv=crv, scale=scale, side=side,
+                            directionLip01=directionLip01, eyeballJnt=eyeballJnt,
                            directionLip02=directionLip02, offsetPos=offsetEyelidPos)
 
 
-        self.controllerLid(scale=scale, side=side,
+        self.controllerLid(sideLFT=sideLFT, sideRGT=sideRGT, scale=scale, side=side, crv=crv,
                            controllerLidDown=controllerLidDown, ctrlColor=ctrlColor)
 
 
-    def controllerLid(self, scale, side, controllerLidDown, ctrlColor):
+    def controllerLid(self, sideRGT, sideLFT, scale, side, crv, controllerLidDown, ctrlColor):
+        if sideRGT in crv:
+            newName = crv.replace(sideRGT, '')
+        elif sideLFT in crv:
+            newName = crv.replace(sideLFT, '')
+        else:
+            newName = crv
+
         # controller 03
-        self.controllerBind03 = ct.Control(matchPos=self.jnt03, prefix=self.prefixNameCrv+ '03',
+        self.controllerBind03 = ct.Control(matchPos=self.jnt03, prefix=au.prefixName(newName)+ '03',
                                            shape=ct.CIRCLEPLUS, groupsCtrl=['Zro', 'Offset'], ctrlSize=scale*0.4,
                                            ctrlColor='red', lockChannels=['v', 's'], side=side
                                            )
@@ -52,32 +63,32 @@ class Build:
         self.controllerBind03OffsetCtrl = self.controllerBind03.parentControl[1]
 
         # controller 01
-        self.controllerBind01 = ct.Control(matchPos=self.jnt01, prefix=self.prefixNameCrv + '01',
+        self.controllerBind01 = ct.Control(matchPos=self.jnt01, prefix=au.prefixName(newName) + '01',
                                            shape=ct.CIRCLEPLUS, groupsCtrl=['Zro', 'Offset', 'All'], ctrlSize=scale*0.15,
                                            ctrlColor=ctrlColor, lockChannels=['v', 's'], side=side
                                            )
         self.controllerBindGrpZro01 = self.controllerBind01.parentControl[0]
 
         # controller 02
-        self.controllerBind02 = ct.Control(matchPos=self.jnt02, prefix=self.prefixNameCrv + '02',
+        self.controllerBind02 = ct.Control(matchPos=self.jnt02, prefix=au.prefixName(newName) + '02',
                                            shape=ct.CIRCLEPLUS, groupsCtrl=['Zro', 'Offset'], ctrlSize=scale*0.2,
                                            ctrlColor=ctrlColor, lockChannels=['v', 's'], side=side
                                            )
         # controller 05
-        self.controllerBind05 = ct.Control(matchPos=self.jnt05, prefix=self.prefixNameCrv + '05',
+        self.controllerBind05 = ct.Control(matchPos=self.jnt05, prefix=au.prefixName(newName) + '05',
                                            shape=ct.CIRCLEPLUS, groupsCtrl=['Zro', 'Offset', 'All'], ctrlSize=scale*0.15,
                                            ctrlColor=ctrlColor, lockChannels=['v', 's'], side=side
                                            )
         self.controllerBindGrpZro05 = self.controllerBind05.parentControl[0]
 
         # controller 04
-        self.controllerBind04 = ct.Control(matchPos=self.jnt04, prefix=self.prefixNameCrv + '04',
+        self.controllerBind04 = ct.Control(matchPos=self.jnt04, prefix=au.prefixName(newName) + '04',
                                            shape=ct.CIRCLEPLUS, groupsCtrl=['Zro', 'Offset'], ctrlSize=scale*0.2,
                                            ctrlColor=ctrlColor, lockChannels=['v', 's'], side=side
                                            )
 
         # create grp controller and parent into it
-        self.grpDrvCtrl = mc.createNode('transform', n=self.prefixNameCrv + 'Ctrl' + '_grp')
+        self.grpDrvCtrl = mc.createNode('transform', n=au.prefixName(newName) + 'Ctrl' + side + '_grp')
         mc.parent(self.controllerBind03.parentControl[0], self.controllerBind01.parentControl[0], self.controllerBind02.parentControl[0],
                   self.controllerBind05.parentControl[0], self.controllerBind04.parentControl[0], self.grpDrvCtrl)
 
@@ -227,7 +238,7 @@ class Build:
             # mid translate and rotate
             au.connectAttrTransRot(self.controllerBind03.control, self.jnt03)
 
-    def bindTranslateReverse(self, control, input2X, input2Y, input2Z, jointBindTarget, ):
+    def bindTranslateReverse(self,  control, input2X, input2Y, input2Z, jointBindTarget):
         mdnReverse = mc.createNode('multiplyDivide', n=au.prefixName(control) + '_mdn')
         mc.connectAttr(control + '.translate', mdnReverse + '.input1')
 
@@ -238,8 +249,15 @@ class Build:
         # connect to object
         mc.connectAttr(mdnReverse+'.output', jointBindTarget+'.translate')
 
-    def wireBindCurve(self, crv, directionLip01, directionLip02, offsetPos,
+    def wireBindCurve(self, sideRGT, sideLFT, crv, directionLip01, directionLip02, offsetPos,
                       scale, eyeballJnt, side):
+
+        if sideRGT in crv:
+            crvNewName = crv.replace(sideRGT, '')
+        elif sideLFT in crv:
+            crvNewName = crv.replace(sideLFT, '')
+        else:
+            crvNewName = crv
 
         jointPosBind = len(self.allJoint)
 
@@ -270,11 +288,11 @@ class Build:
         mc.delete(transform)
 
         mc.select(cl=1)
-        jnt01  = mc.joint(n=self.prefixNameCrv + '01' + '_bind', p=self.xformJnt01, rad=0.5 * scale)
-        jnt02  = mc.duplicate(jnt01, n=self.prefixNameCrv + '02' + '_bind')[0]
-        jnt03  = mc.duplicate(jnt01, n=self.prefixNameCrv + '03' +  '_bind')[0]
-        jnt04  = mc.duplicate(jnt01, n=self.prefixNameCrv + '04' +  '_bind')[0]
-        jnt05  = mc.duplicate(jnt01, n=self.prefixNameCrv + '05' +  '_bind')[0]
+        jnt01  = mc.joint(n=au.prefixName(crvNewName) + '01' + side + '_bind', p=self.xformJnt01, rad=0.5 * scale)
+        jnt02  = mc.duplicate(jnt01, n=au.prefixName(crvNewName)+ '02' + side + '_bind')[0]
+        jnt03  = mc.duplicate(jnt01, n=au.prefixName(crvNewName) + '03' + side +  '_bind')[0]
+        jnt04  = mc.duplicate(jnt01, n=au.prefixName(crvNewName) + '04' + side +  '_bind')[0]
+        jnt05  = mc.duplicate(jnt01, n=au.prefixName(crvNewName) + '05' + side +  '_bind')[0]
 
         # set the position RGT joint
         mc.xform(jnt02, ws=1, t=self.xformJnt02)
@@ -282,33 +300,32 @@ class Build:
         mc.xform(jnt04, ws=1, t=self.xformJnt04)
         mc.xform(jnt05, ws=1, t=self.xformJnt05)
 
-
         # create bind curve
         deformCrv = mc.duplicate(crv)[0]
             # mc.curve(ep=[(self.xformJnt01), (self.xformJnt02), (self.xformJnt03),
             #                      (self.xformJnt04), (self.xformJnt05)], degree=3)
 
-        deformCrv = mc.rename(deformCrv, (self.prefixNameCrv + 'Bind' + '_crv'))
+        deformCrv = mc.rename(deformCrv, (au.prefixName(crvNewName) + 'Bind' + side+ '_crv'))
 
         # parent the bind joint
         self.jointBind03Grp = au.createParentTransform(listparent=['Zro', 'Offset', 'All'], object=jnt03,
-                                                       matchPos=jnt03, prefix=self.prefixNameCrv+ '03',
+                                                       matchPos=jnt03, prefix=au.prefixName(crvNewName) + '03',
                                                        suffix='_bind', side=side)
 
         self.jointBind01Grp = au.createParentTransform(listparent=['Zro', 'Offset'], object=jnt01,
-                                                       matchPos=jnt01, prefix=self.prefixNameCrv + '01',
+                                                       matchPos=jnt01, prefix=au.prefixName(crvNewName) + '01',
                                                        suffix='_bind', side=side)
 
         self.jointBind02Grp = au.createParentTransform(listparent=['Zro', 'Offset'], object=jnt02,
-                                                       matchPos=jnt02, prefix=self.prefixNameCrv + '02',
+                                                       matchPos=jnt02, prefix=au.prefixName(crvNewName) + '02',
                                                        suffix='_bind', side=side)
 
         self.jointBind05Grp = au.createParentTransform(listparent=['Zro', 'Offset'], object=jnt05,
-                                                       matchPos=jnt05, prefix=self.prefixNameCrv + '05',
+                                                       matchPos=jnt05, prefix=au.prefixName(crvNewName) + '05',
                                                        suffix='_bind', side=side)
 
         self.jointBind04Grp = au.createParentTransform(listparent=['Zro', 'Offset'], object=jnt04,
-                                                       matchPos=jnt04, prefix=self.prefixNameCrv + '04',
+                                                       matchPos=jnt04, prefix=au.prefixName(crvNewName) + '04',
                                                        suffix='_bind', side=side)
 
         # assign bind grp jnt
@@ -316,13 +333,13 @@ class Build:
         self.jointBind03GrpOffset = self.jointBind03Grp[1]
 
         # eyeball grp connect
-        self.eyeballOffsetBind01 = self.eyeballGrpBind(crv=crv, bindZroGrp=self.jointBind01Grp[0],
+        self.eyeballOffsetBind01 = self.eyeballGrpBind(crv=crvNewName, bindZroGrp=self.jointBind01Grp[0],
                                                        number='01', side=side, eyeballJnt=eyeballJnt)
 
-        self.eyeballOffsetBind03 = self.eyeballGrpBind(crv=crv, bindZroGrp=self.jointBind03Grp[0],
+        self.eyeballOffsetBind03 = self.eyeballGrpBind(crv=crvNewName, bindZroGrp=self.jointBind03Grp[0],
                                                        number='03', side=side, eyeballJnt=eyeballJnt)
 
-        self.eyeballOffsetBind05 = self.eyeballGrpBind(crv=crv, bindZroGrp=self.jointBind05Grp[0],
+        self.eyeballOffsetBind05 = self.eyeballGrpBind(crv=crvNewName, bindZroGrp=self.jointBind05Grp[0],
                                                        number='05', side=side, eyeballJnt=eyeballJnt)
 
         if self.pos > 0:
@@ -343,7 +360,7 @@ class Build:
 
         # skinning the joint to the bind curve
         skinCls = mc.skinCluster([jnt05, jnt04, jnt01, jnt02, jnt03], deformCrv,
-                                 n='%s%s%s'% ('wire', self.prefixNameCrv.capitalize(), 'SkinCluster'), tsb=True, bm=0, sm=0, nw=1, mi=3)
+                                 n='%s%s%s%s'% ( au.prefixName(crvNewName), 'Wire', side, 'SkinCluster'), tsb=True, bm=0, sm=0, nw=1, mi=3)
 
         # Distribute the skin
         skinPercent0 = '%s.cv[0]' % deformCrv
@@ -372,7 +389,7 @@ class Build:
 
         # wire the curve
         wireDef = mc.wire(crv, dds=(0, 100 * scale), wire=deformCrv)
-        wireDef[0] = mc.rename(wireDef[0], (self.prefixNameCrv + '_wireNode'))
+        wireDef[0] = mc.rename(wireDef[0], (au.prefixName(crvNewName)+ side+ '_wireNode'))
 
         # constraint mid to 02 left and right
         mc.parentConstraint(jnt03, jnt05, self.jointBind04Grp[0], mo=1)
@@ -385,13 +402,13 @@ class Build:
         self.jnt04 = jnt04
 
         # create grp curves
-        self.curvesGrp = mc.createNode('transform', n=self.prefixNameCrv + 'Crv' + '_grp')
+        self.curvesGrp = mc.createNode('transform', n=au.prefixName(crvNewName) + 'Crv' + side + '_grp')
         mc.setAttr (self.curvesGrp + '.it', 0, l=1)
         mc.parent(deformCrv, mc.listConnections(wireDef[0] + '.baseWire[0]')[0], self.curvesGrp)
         mc.hide(self.curvesGrp)
 
         # create grp bind
-        self.bindJntGrp = mc.createNode('transform', n=self.prefixNameCrv + 'JntBind' + '_grp')
+        self.bindJntGrp = mc.createNode('transform', n=au.prefixName(crvNewName) + 'JntBind' + side + '_grp')
         mc.parent(self.eyeballOffsetBind03[0], self.eyeballOffsetBind01[0], self.jointBind02Grp[0],
                   self.eyeballOffsetBind05[0], self.jointBind04Grp[0], self.bindJntGrp)
         mc.hide(self.bindJntGrp)
@@ -400,6 +417,7 @@ class Build:
 
     def eyeballGrpBind(self, crv, number, side, bindZroGrp, eyeballJnt):
         # bind grp for eyeball
+
         eyeballZro = mc.group(em=1, n=au.prefixName(crv)+'EyeballZro' + number + side+'_grp')
         eyeballOffset = mc.group(em=1, n=au.prefixName(crv)+'EyeballOffset' + number + side +'_grp', p=eyeballZro)
         mc.delete(mc.parentConstraint(eyeballJnt, eyeballZro))
@@ -408,21 +426,40 @@ class Build:
 
         return eyeballZro, eyeballOffset
 
-    def createJointLid(self, crv, worldUpObject, eyeballJnt, scale):
+    def createJointLid(self, crv, worldUpObject, eyeballJnt, scale, sideRGT, sideLFT, side):
         self.allJointCenter =[]
         self.allJoint =[]
         self.allLocator=[]
 
+        if sideRGT in crv:
+            crvNewName = crv.replace(sideRGT, '')
+        elif sideLFT in crv:
+            crvNewName = crv.replace(sideLFT, '')
+        else:
+            crvNewName = crv
+
         for i, v in enumerate(self.vtxCrv):
+
+                # get the number
+            # try:
+            #     patterns = [r'\d+']
+            #     prefixNumber = au.prefixName(newName)
+            #     for p in patterns:
+            #         prefixNumber = re.findall(p, prefixNumber)[0]
+            # except:
+            #     prefixNumber = ''
+            # # get the prefix without number
+            # prefixNoNumber = str(au.prefixName(newName)).translate(None, digits)
+
             # create joint
             mc.select(cl=1)
-            self.joint = mc.joint(n='%s%02d%s' % (self.prefixNameCrv, (i + 1), '_jnt'), rad=0.1 * scale)
+            self.joint = mc.joint(n='%s%02d%s%s' % (au.prefixName(crvNewName), (i + 1), side, '_jnt'), rad=0.1 * scale)
             pos = mc.xform(v, q=1, ws=1, t=1)
             mc.xform(self.joint, ws=1, t=pos)
             self.allJoint.append(self.joint)
 
             mc.select(cl=1)
-            self.jointCenter = mc.joint(n='%s%02d%s%s' % (self.prefixNameCrv, (i + 1),'Ctr', '_jnt'), rad=0.1 * scale)
+            self.jointCenter = mc.joint(n='%s%s%02d%s%s' % (au.prefixName(crvNewName), 'Ctr', (i + 1), side, '_jnt'), rad=0.1 * scale)
             posC = mc.xform(eyeballJnt, q=1, ws=1, t=1)
             mc.xform(self.jointCenter, ws=1, t=posC)
             mc.parent(self.joint, self.jointCenter)
@@ -432,7 +469,7 @@ class Build:
             self.allJointCenter.append(self.jointCenter)
 
             # create locator
-            self.locator = mc.spaceLocator(n='%s%02d%s' % (self.prefixNameCrv, (i + 1), '_loc'))[0]
+            self.locator = mc.spaceLocator(n='%s%02d%s%s' % (au.prefixName(crvNewName), (i + 1), side, '_loc'))[0]
 
             mc.xform(self.locator, ws=1, t=pos)
 
@@ -445,19 +482,19 @@ class Build:
             # connect curve to locator grp
             curveRelatives = mc.listRelatives(crv, s=True)[0]
             u = self.getUParam(pos, curveRelatives)
-            pci = mc.createNode("pointOnCurveInfo", n='%s%02d%s' % (self.prefixNameCrv, (i + 1), '_pci'))
+            pci = mc.createNode("pointOnCurveInfo", n='%s%02d%s%s' % (au.prefixName(crvNewName), (i + 1), side, '_pci'))
             mc.connectAttr(curveRelatives + '.worldSpace', pci + '.inputCurve')
             mc.setAttr(pci + '.parameter', u)
             mc.connectAttr(pci + '.position', self.locator + '.t')
 
 
         # grouping joint
-        self.jointGrp = mc.group(em=1, n=self.prefixNameCrv + 'Jnt' + '_grp')
+        self.jointGrp = mc.group(em=1, n=au.prefixName(crvNewName) + 'Jnt' + side+ '_grp')
         mc.parent(self.allJointCenter, worldUpObject, self.jointGrp)
         mc.hide(self.jointGrp)
 
         # grouping locator
-        self.locatorGrp = mc.group(em=1, n=self.prefixNameCrv+'Loc'+'_grp')
+        self.locatorGrp = mc.group(em=1, n=au.prefixName(crvNewName)+'Loc'+ side+'_grp')
         mc.setAttr (self.locatorGrp + '.it', 0, l=1)
         mc.parent(self.allLocator, self.locatorGrp)
         mc.hide(self.locatorGrp)

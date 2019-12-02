@@ -101,6 +101,8 @@ class MainFace:
                         browMidJnt=browMidLFTJnt,
                         browOutJnt=browOutLFTJnt,
                         eyelidPinchJnt=eyelidPinchLFTJnt,
+                        sideRGT=sideRGT,
+                        sideLFT=sideLFT,
                         scale=scale,
                         side=sideLFT)
 
@@ -119,6 +121,8 @@ class MainFace:
                         browMidJnt=browMidRGTJnt,
                         browOutJnt=browOutRGTJnt,
                         eyelidPinchJnt=eyelidPinchRGTJnt,
+                        sideRGT=sideRGT,
+                        sideLFT=sideLFT,
                         scale=scale,
                         side=sideRGT)
 
@@ -126,6 +130,7 @@ class MainFace:
         self.headUpCtrl = main.headUpCtrl
 
         self.headLowCtrl = main.headLowCtrl
+        self.jawCtrl = main.jawCtrl
 
         # CONSTRAINT CHEEK DOWN JNT
         mc.parentConstraint(main.headLowCtrl, main.jawCtrl, secLFT.cheekDownJntGrp, mo=1)

@@ -16,6 +16,8 @@ class Eyelid:
                  prefixEyeballAim,
                  scale,
                  side,
+                 sideLFT,
+                 sideRGT,
                  directionLid01,
                  directionLid02,
                  positionEyeAimCtrl,
@@ -54,6 +56,8 @@ class Eyelid:
                                  directionLip01=directionLid01,
                                  directionLip02=directionLid02,
                                  side=side,
+                                 sideLFT=sideLFT,
+                                 sideRGT=sideRGT,
                                  ctrlColor='yellow',
                                  controllerLidDown=False)
 
@@ -65,11 +69,13 @@ class Eyelid:
                                    directionLip01=directionLid01,
                                    directionLip02=directionLid02,
                                    side=side,
+                                   sideLFT=sideLFT,
+                                   sideRGT=sideRGT,
                                    ctrlColor='yellow',
                                    controllerLidDown=True)
 
         # BLINK SETUP
-        blink = self.blinkSetup(eyeballJnt=eyeballJnt, prefixEyeball=prefixEyeball,
+        blink = self.blinkSetup(sideRGT=sideRGT, sideLFT=sideLFT,eyeballJnt=eyeballJnt, prefixEyeball=prefixEyeball,
                                 prefixEyeballAim=prefixEyeballAim, crvUp=crvUp,
                                 crvDown=crvDown, scale=scale, side=side, eyelidUp=self.eyelidUp,
                                 eyelidDown=self.eyelidDown, positionEyeAimCtrl=positionEyeAimCtrl,
@@ -122,10 +128,10 @@ class Eyelid:
             au.connectAttrTransRot(lidCornerCtrlOut[0], self.eyelidUp.jointBind05Grp[1])
             au.connectAttrTransRot(lidCornerCtrlOut[0], self.eyelidDown.jointBind05Grp[1])
         else:
-            self.cornerReverseNode(lidCornerCtrl=lidCornerCtrlOut[0], side=side, lidCornerName='lidCornerOut',
+            self.cornerReverseNode(sideRGT, sideLFT, lidCornerCtrl=lidCornerCtrlOut[0], side=side, lidCornerName='lidCornerOut',
                                    targetUp=self.eyelidUp.jointBind05Grp[1], targetDown=self.eyelidDown.jointBind05Grp[1])
 
-            self.cornerReverseNode(lidCornerCtrl=lidCornerCtrlIn[0], side=side, lidCornerName='lidCornerIn',
+            self.cornerReverseNode(sideRGT, sideLFT, lidCornerCtrl=lidCornerCtrlIn[0], side=side, lidCornerName='lidCornerIn',
                                    targetUp=self.eyelidUp.jointBind01Grp[1], targetDown=self.eyelidDown.jointBind01Grp[1])
 
     # ==================================================================================================================
@@ -148,9 +154,16 @@ class Eyelid:
 
         mc.parent(self.eyeballCtrl.parentControl[0], headUpCtrl)
 
-    def cornerReverseNode(self, lidCornerCtrl, side, lidCornerName='', targetUp='', targetDown=''):
-        transRev = mc.createNode('multiplyDivide', n=lidCornerName + 'Trans' + side + '_mdn')
-        rotRev = mc.createNode('multiplyDivide', n=lidCornerName+ 'Rot' + side + '_mdn')
+    def cornerReverseNode(self, sideRGT, sideLFT, lidCornerCtrl, side, lidCornerName='', targetUp='', targetDown=''):
+        if sideRGT in lidCornerName:
+            newName = lidCornerName.replace(sideRGT, '')
+        elif sideLFT in lidCornerName:
+            newName = lidCornerName.replace(sideLFT, '')
+        else:
+            newName = lidCornerName
+
+        transRev = mc.createNode('multiplyDivide', n=newName + 'Trans' + side + '_mdn')
+        rotRev = mc.createNode('multiplyDivide', n=newName+ 'Rot' + side + '_mdn')
         mc.connectAttr(lidCornerCtrl + '.translate', transRev + '.input1')
         mc.setAttr(transRev + '.input2X', -1)
 
@@ -163,7 +176,7 @@ class Eyelid:
         mc.connectAttr(transRev + '.output', targetDown + '.translate')
         mc.connectAttr(rotRev + '.output', targetDown + '.rotate')
 
-    def cornerCtrl(self, matchPosOne, matchPosTwo, prefix, scale, side):
+    def cornerCtrl(self,matchPosOne, matchPosTwo, prefix, scale, side):
         cornerCtrl = ct.Control(matchPos=matchPosOne, matchPosTwo=matchPosTwo,
                                 prefix=prefix,
                                 shape=ct.CIRCLEPLUS, groupsCtrl=['Zro', 'Offset'],
@@ -183,7 +196,7 @@ class Eyelid:
 
         return cornerCtrl.control, cornerCtrl.parentControl[0]
 
-    def blinkSetup(self, eyeballJnt, prefixEyeball, prefixEyeballAim, crvUp, crvDown, scale,
+    def blinkSetup(self, sideRGT, sideLFT, eyeballJnt, prefixEyeball, prefixEyeballAim, crvUp, crvDown, scale,
                    side, eyelidUp, eyelidDown, positionEyeAimCtrl, worldUpAimObject, eyeballAimMainCtrl,
                    controllerBind03OffsetCtrlUp, controllerBind03OffsetCtrlDown, jointBind03GrpAllUp, jointBind03GrpAllDown,
                    jointBind03GrpOffsetDown, jointBind03GrpOffsetUp):
@@ -321,18 +334,30 @@ class Eyelid:
                       weight=[(0, 1), (1, 0)])[0]
 
         mc.select(cl=1)
+        if sideRGT in crvUp:
+            crvUpNewName = crvUp.replace(sideRGT, '')
+        elif sideLFT in crvUp:
+            crvUpNewName = crvUp.replace(sideLFT, '')
+        else:
+            crvUpNewName = crvUp
         # wire deform up on mid curves
         stickyMidwireDefUp = mc.wire(curveBlinkUp, dds=(0, 100 * scale), wire=curveBlinkBindMid)
-        stickyMidwireDefUp[0] = mc.rename(stickyMidwireDefUp[0], (au.prefixName(crvUp) + 'Blink' +side+ '_wireNode'))
+        stickyMidwireDefUp[0] = mc.rename(stickyMidwireDefUp[0], (au.prefixName(crvUpNewName) + 'Blink' +side+ '_wireNode'))
 
         # SET TO DOWN CURVE
         mc.setAttr(blinkBsn+'.%s' % eyelidUp.deformCrv, 0)
         mc.setAttr(blinkBsn+'.%s'% eyelidDown.deformCrv, 1)
 
         mc.select(cl=1)
+        if sideRGT in crvDown:
+            crvDownNewName = crvDown.replace(sideRGT, '')
+        elif sideLFT in crvDown:
+            crvDownNewName = crvDown.replace(sideLFT, '')
+        else:
+            crvDownNewName = crvDown
         # wire deform down on mid curves
         stickyMidwireDefDown = mc.wire(curveBlinkDown, dds=(0, 100 * scale), wire=curveBlinkBindMid)
-        stickyMidwireDefDown[0] = mc.rename(stickyMidwireDefDown[0], (au.prefixName(crvDown) + 'Blink' + side+ '_wireNode'))
+        stickyMidwireDefDown[0] = mc.rename(stickyMidwireDefDown[0], (au.prefixName(crvDownNewName) + 'Blink' + side+ '_wireNode'))
 
         # SET KEYFRAME
         mc.setDrivenKeyframe(blinkBsn +'.%s' % eyelidUp.deformCrv,

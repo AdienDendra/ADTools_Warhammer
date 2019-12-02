@@ -18,6 +18,8 @@ class Build:
                  eyelidPinchJnt,
                  scale,
                  objectFolMesh,
+                 sideRGT,
+                 sideLFT,
                  side,
                  headCtrl,
                  headUpCtrl,
@@ -221,19 +223,19 @@ class Build:
             mc.setAttr(self.earCtrlGrp+ '.scaleX', -1)
             mc.setAttr(self.eyebrowCtrlGrp+ '.scaleX', -1)
 
-            self.reverseNode(self.nostrilCtrl, nostrilJnt)
-            self.reverseNode(self.cheekUpCtrl, cheekUpJnt)
-            self.reverseNode(self.cheekDownCtrl, cheekDownJnt)
-            self.reverseNode(self.eyebrowInCtrl, eyebrowInJnt)
-            self.reverseNode(self.eyebrowMidCtrl, eyebrowMidJnt)
-            self.reverseNode(self.eyebrowOutCtrl, eyebrowOutJnt)
-            self.reverseNode(self.browInCtrl, browInJnt)
-            self.reverseNode(self.browMidCtrl, browMidJnt)
-            self.reverseNode(self.browOutCtrl, browOutJnt)
-            self.reverseNode(self.eyelidPinchCtrl, eyelidPinchJnt)
-            self.reverseNode(self.eyebrowCtrl, eyebrowInMain)
-            self.reverseNode(self.eyebrowCtrl, eyebrowMidMain)
-            self.reverseNode(self.eyebrowCtrl, eyebrowOutMain)
+            self.reverseNode(self.nostrilCtrl, nostrilJnt, sideRGT, sideLFT, side)
+            self.reverseNode(self.cheekUpCtrl, cheekUpJnt, sideRGT, sideLFT, side)
+            self.reverseNode(self.cheekDownCtrl, cheekDownJnt, sideRGT, sideLFT, side)
+            self.reverseNode(self.eyebrowInCtrl, eyebrowInJnt, sideRGT, sideLFT, side)
+            self.reverseNode(self.eyebrowMidCtrl, eyebrowMidJnt, sideRGT, sideLFT, side)
+            self.reverseNode(self.eyebrowOutCtrl, eyebrowOutJnt, sideRGT, sideLFT, side)
+            self.reverseNode(self.browInCtrl, browInJnt, sideRGT, sideLFT, side)
+            self.reverseNode(self.browMidCtrl, browMidJnt, sideRGT, sideLFT, side)
+            self.reverseNode(self.browOutCtrl, browOutJnt, sideRGT, sideLFT, side)
+            self.reverseNode(self.eyelidPinchCtrl, eyelidPinchJnt, sideRGT, sideLFT, side)
+            self.reverseNode(self.eyebrowCtrl, eyebrowInMain, sideRGT, sideLFT, side)
+            self.reverseNode(self.eyebrowCtrl, eyebrowMidMain, sideRGT, sideLFT, side)
+            self.reverseNode(self.eyebrowCtrl, eyebrowOutMain, sideRGT, sideLFT, side)
 
             au.connectAttrScale(self.nostrilCtrl, nostrilJnt)
             au.connectAttrScale(self.cheekUpCtrl, cheekUpJnt)
@@ -288,13 +290,20 @@ class Build:
         au.connectAttrObject(self.eyebrowCtrl, self.ctrlOffsetGrpEyebrowMidCenter)
         au.connectAttrObject(self.eyebrowCtrl, self.ctrlOffsetGrpEyebrowOutCenter)
 
-    def reverseNode(self, object, targetJnt):
-        transMdn = mc.createNode('multiplyDivide', n=au.prefixName(targetJnt)+'Trans'+'_mdn')
+    def reverseNode(self, object, targetJnt, sideRGT, sideLFT, side):
+        if sideRGT in targetJnt:
+            newName = targetJnt.replace(sideRGT, '')
+        elif sideLFT in targetJnt:
+            newName = targetJnt.replace(sideLFT, '')
+        else:
+            newName = targetJnt
+
+        transMdn = mc.createNode('multiplyDivide', n=au.prefixName(newName)+'Trans'+ side+ '_mdn')
         mc.connectAttr(object+'.translate', transMdn+'.input1')
         mc.setAttr(transMdn+'.input2X', -1)
-        mc.connectAttr(transMdn+'.output', targetJnt+'.translate')
+        mc.connectAttr(transMdn+'.output', targetJnt +'.translate')
 
-        rotMdn = mc.createNode('multiplyDivide', n=au.prefixName(targetJnt)+'Rot' +'_mdn')
+        rotMdn = mc.createNode('multiplyDivide', n=au.prefixName(newName)+'Rot' + side+'_mdn')
         mc.connectAttr(object+'.rotate', rotMdn+'.input1')
         mc.setAttr(rotMdn+'.input2Y', -1)
         mc.setAttr(rotMdn+'.input2Z', -1)
