@@ -90,21 +90,19 @@ class Build:
         object = [self.cornerParentCtrl, self.upLip01ParentCtrl, self.upLip02ParentCtrl,
                   self.downLip01ParentCtrl, self.downLip02ParentCtrl]
         self.follicleTransformAll=[]
-        self.follicleShapeAll=[]
         for i in object:
-            follicle = au.createFollicleSel(objSel=i, objMesh=objectFolMesh, connectFol=['transConn'])
+            follicle = au.createFollicleSel(objSel=i, objMesh=objectFolMesh, connectFol=['transConn'])[0]
             mc.parent(i, follicle)
-            mc.scaleConstraint(headLowCtrl, follicle[0])
+            mc.scaleConstraint(headLowCtrl, follicle)
 
-            self.follicleTransformAll.append(follicle[0])
-            self.follicleShapeAll.append(follicle[1])
+            self.follicleTransformAll.append(follicle)
 
-        mc.orientConstraint(jawCtrl, self.follicleShapeAll[0])
-        mc.orientConstraint(jawCtrl, self.follicleShapeAll[3])
-        mc.orientConstraint(jawCtrl,self.follicleShapeAll[4])
+        mc.orientConstraint(jawCtrl, self.follicleTransformAll[0])
+        mc.orientConstraint(jawCtrl, self.follicleTransformAll[3])
+        mc.orientConstraint(jawCtrl,self.follicleTransformAll[4])
 
-        mc.orientConstraint(headLowCtrl,self.follicleShapeAll[1])
-        mc.orientConstraint(headLowCtrl,self.follicleShapeAll[2])
+        mc.orientConstraint(headLowCtrl,self.follicleTransformAll[1])
+        mc.orientConstraint(headLowCtrl,self.follicleTransformAll[2])
 
         # CONSTRAINT CORNER JNT GRP
         mc.parentConstraint(headLowCtrl, jawCtrl, cornerGrpJnt, mo=1)

@@ -107,16 +107,14 @@ class Lip:
 
         object = [self.lipMidUpParentCtrl, self.lipMidDownParentCtrl]
         follTransMid = []
-        follicleShapeMid=[]
         for i in object:
-            follicle = au.createFollicleSel(objSel=i, objMesh=objectFolMesh, connectFol=['transConn'])
-            mc.parent(i, follicle[0])
-            mc.scaleConstraint(headLowCtrl, follicle[0])
-            follTransMid.append(follicle[0])
-            follicleShapeMid.append(follicle[1])
+            follicle = au.createFollicleSel(objSel=i, objMesh=objectFolMesh, connectFol=['transConn'])[0]
+            mc.parent(i, follicle)
+            mc.scaleConstraint(headLowCtrl, follicle)
+            follTransMid.append(follicle)
 
-        mc.orientConstraint(jawCtrl, follicleShapeMid[1])
-        mc.orientConstraint(headLowCtrl, follicleShapeMid[0])
+        mc.orientConstraint(jawCtrl, follTransMid[1])
+        mc.orientConstraint(headLowCtrl, follTransMid[0])
 
         mc.parent(follTransMid, lipLFT.follicleTransformAll, lipRGT.follicleTransformAll, lipGroup)
 
