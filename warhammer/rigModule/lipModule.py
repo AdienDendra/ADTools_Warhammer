@@ -113,8 +113,8 @@ class Lip:
             mc.scaleConstraint(headLowCtrl, follicle)
             follTransMid.append(follicle)
 
-        mc.orientConstraint(jawCtrl, follTransMid[1])
-        mc.orientConstraint(headLowCtrl, follTransMid[0])
+        mc.orientConstraint(jawCtrl, follTransMid[1], mo=1)
+        mc.orientConstraint(headLowCtrl, follTransMid[0], mo=1)
 
         mc.parent(follTransMid, lipLFT.follicleTransformAll, lipRGT.follicleTransformAll, lipGroup)
 

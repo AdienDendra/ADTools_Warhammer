@@ -97,12 +97,12 @@ class Build:
 
             self.follicleTransformAll.append(follicle)
 
-        mc.orientConstraint(jawCtrl, self.follicleTransformAll[0])
-        mc.orientConstraint(jawCtrl, self.follicleTransformAll[3])
-        mc.orientConstraint(jawCtrl,self.follicleTransformAll[4])
+        mc.orientConstraint(jawCtrl, self.follicleTransformAll[0], mo=1)
+        mc.orientConstraint(jawCtrl, self.follicleTransformAll[3], mo=1)
+        mc.orientConstraint(jawCtrl,self.follicleTransformAll[4], mo=1)
 
-        mc.orientConstraint(headLowCtrl,self.follicleTransformAll[1])
-        mc.orientConstraint(headLowCtrl,self.follicleTransformAll[2])
+        mc.orientConstraint(headLowCtrl,self.follicleTransformAll[1], mo=1)
+        mc.orientConstraint(headLowCtrl,self.follicleTransformAll[2], mo=1)
 
         # CONSTRAINT CORNER JNT GRP
         mc.parentConstraint(headLowCtrl, jawCtrl, cornerGrpJnt, mo=1)
